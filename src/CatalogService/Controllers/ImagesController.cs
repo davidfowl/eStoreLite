@@ -25,6 +25,8 @@ public class ImagesController(CatalogDbContext catalogDbContext, IHostEnvironmen
             return NotFound();
         }
 
-        return PhysicalFile(path, "image/jpeg");
+        var bytes = await System.IO.File.ReadAllBytesAsync(path);
+
+        return File(bytes, "image/jpeg");
     }
 }

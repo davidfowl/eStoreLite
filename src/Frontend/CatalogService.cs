@@ -4,6 +4,9 @@ public class CatalogService(HttpClient client)
 {
     public Task<Catalog?> GetItemsAsync(int pageIndex = 0) =>
         client.GetFromJsonAsync<Catalog>($"/api/v1/catalog/items/type/all/brand?pageIndex={pageIndex}");
+
+    public Task<HttpResponseMessage> GetImageAsync(int catalogItemId) =>
+        client.GetAsync($"/api/v1/catalog/items/{catalogItemId}/image");
 }
 
 public record Catalog

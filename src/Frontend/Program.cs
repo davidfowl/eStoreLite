@@ -1,14 +1,13 @@
+using System.Net;
 using Microsoft.AspNetCore.Components.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var catalogServiceUrl = builder.Configuration["CatalogServiceUrl"] ??
-    throw new InvalidDataException("Missing configuration for CatalogServiceUrl");
-
-builder.Services.AddHttpForwarder();
-
 builder.Services.AddHttpClient<CatalogService>(c =>
 {
+    var catalogServiceUrl = builder.Configuration["CatalogServiceUrl"] ??
+        throw new InvalidDataException("Missing configuration for CatalogServiceUrl");
+
     c.BaseAddress = new(catalogServiceUrl);
 });
 
@@ -20,15 +19,15 @@ app.UseStaticFiles();
 
 app.MapGet("/", (int page = 0) => new RazorComponentResult<App>(new { page }));
 
-app.MapForwarder("/catalog/images/{id}", catalogServiceUrl, (context, proxyRequest, destinationPrefix, token) =>
+app.MapGet("/catalog/images/{id}", async (int id, CatalogService catalogService) =>
 {
-    if (context.Request.RouteValues["id"] is string id)
-    {
-        // Rewrite the path to point to the catalog service's image endpoint
-        proxyRequest.RequestUri = new Uri($"{destinationPrefix}/api/v1/catalog/items/{id}/image");
-    }
+    var response = await catalogService.GetImageAsync(id);
 
-    return ValueTask.CompletedTask;
+    return response.StatusCode switch
+    {
+        HttpStatusCode.NotFound => Results.NotFound(),
+        _ => Results.File(await response.Content.ReadAsByteArrayAsync(), "image/jpeg")
+    };
 });
 
 app.Run();
