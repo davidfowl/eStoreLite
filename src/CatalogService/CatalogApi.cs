@@ -21,6 +21,7 @@ public static class CatalogApi
                 .LongCountAsync();
 
             var itemsOnPage = await root
+                .OrderBy(ci => ci.CatalogBrandId)
                 .Skip(pageSize * pageIndex)
                 .Take(pageSize)
                 .ToListAsync();
