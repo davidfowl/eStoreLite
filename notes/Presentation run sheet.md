@@ -17,6 +17,7 @@
 - 5.0, 6.0, 7.0, 8.0
 - Performance is a forever goal, i.e. every release we work on performance
 - Talk about TechEmpower, show numbers increasing from version to version
+- Point to the Upgrade Assistant (try to use it if we can)
 - Point to stoub's performances posts
 
 ## 00:08 2nd optimization: Move to minimal APIs
