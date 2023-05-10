@@ -26,15 +26,15 @@
             }
         </div>
 
-        <div class="paging">
+        <div class="pager">
             @if (paginationInfo!.ActualPage > 0)
             {
-                <a href="?page=@(paginationInfo.ActualPage - 1)">Previous</a>
+                <a class="previous" href="?page=@(paginationInfo.ActualPage - 1)">Previous</a>
             }
 
             @if (paginationInfo.ActualPage < paginationInfo.TotalPages - 1)
             {
-                <a href="?page=@(paginationInfo.ActualPage + 1)">Next</a>
+                <a class="next" href="?page=@(paginationInfo.ActualPage + 1)">Next</a>
             }
         </div>
     }
@@ -43,6 +43,7 @@
         <p>Loading...</p>
     }
 
+    <script src="_framework/blazor.web.js" suppress-error="BL9992"></script>
 </body>
 </html>
 

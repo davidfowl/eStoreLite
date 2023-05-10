@@ -18,3 +18,18 @@
 .grid-item-text {
     text-align: center;
 }
+
+.pager {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.pager next {
+    margin-left: 1rem;
+}
+
+.pager previous {
+    margin-right: 1rem;
+}
