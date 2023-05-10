@@ -2,8 +2,8 @@
 
 public class CatalogService(HttpClient client)
 {
-    public Task<Catalog?> GetItemsAsync() => 
-        client.GetFromJsonAsync<Catalog>("/api/v1/catalog/items/type/all/brand");
+    public Task<Catalog?> GetItemsAsync(int pageIndex = 0) =>
+        client.GetFromJsonAsync<Catalog>($"/api/v1/catalog/items/type/all/brand?pageIndex={pageIndex}");
 }
 
 public record Catalog

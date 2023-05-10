@@ -29,6 +29,18 @@
                 </div>
             }
         </div>
+
+        <div class="paging">
+            @if (paginationInfo!.ActualPage > 0)
+            {
+                <a href="?page=@(paginationInfo.ActualPage - 1)">Previous</a>
+            }
+
+            @if (paginationInfo.ActualPage < paginationInfo.TotalPages - 1)
+            {
+                <a href="?page=@(paginationInfo.ActualPage + 1)">Next</a>
+            }
+        </div>
     }
     else
     {
@@ -40,9 +52,28 @@
 
 @code {
     Catalog? catalog;
+    PaginationInfo? paginationInfo;
+
+    [SupplyParameterFromQuery]
+    [Parameter]
+    public int? Page { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        catalog = await CatalogService.GetItemsAsync();
+        var itemsPerPage = 10;
+        var page = Page ?? 0;
+
+        catalog = await CatalogService.GetItemsAsync(page);
+
+        if (catalog is null)
+        {
+            return;
+        }
+
+        // Calculate the total number of pages
+        var totalPages = (int)Math.Ceiling(catalog.Count / (decimal)itemsPerPage);
+        paginationInfo = new PaginationInfo(catalog.PageIndex, catalog.PageSize, catalog.Data.Count, totalPages);
     }
+
+    record PaginationInfo(int ActualPage, int ItemsPerPage, int TotalItems, int TotalPages);
 }
