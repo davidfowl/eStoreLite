@@ -1,13 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-
-#nullable disable
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace CatalogService.Migrations
 {
-    /// <inheritdoc />
     public partial class Initial : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateSequence(
@@ -26,8 +23,9 @@ namespace CatalogService.Migrations
                 name: "CatalogBrand",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false),
-                    Brand = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SequenceHiLo),
+                    Brand = table.Column<string>(maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -38,8 +36,9 @@ namespace CatalogService.Migrations
                 name: "CatalogType",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false),
-                    Type = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SequenceHiLo),
+                    Type = table.Column<string>(maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -50,17 +49,18 @@ namespace CatalogService.Migrations
                 name: "Catalog",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false),
-                    Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true),
-                    Price = table.Column<decimal>(type: "numeric", nullable: false),
-                    PictureFileName = table.Column<string>(type: "text", nullable: true),
-                    CatalogTypeId = table.Column<int>(type: "integer", nullable: false),
-                    CatalogBrandId = table.Column<int>(type: "integer", nullable: false),
-                    AvailableStock = table.Column<int>(type: "integer", nullable: false),
-                    RestockThreshold = table.Column<int>(type: "integer", nullable: false),
-                    MaxStockThreshold = table.Column<int>(type: "integer", nullable: false),
-                    OnReorder = table.Column<bool>(type: "boolean", nullable: false)
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SequenceHiLo),
+                    Name = table.Column<string>(maxLength: 50, nullable: false),
+                    Description = table.Column<string>(nullable: true),
+                    Price = table.Column<decimal>(nullable: false),
+                    PictureFileName = table.Column<string>(nullable: true),
+                    CatalogTypeId = table.Column<int>(nullable: false),
+                    CatalogBrandId = table.Column<int>(nullable: false),
+                    AvailableStock = table.Column<int>(nullable: false),
+                    RestockThreshold = table.Column<int>(nullable: false),
+                    MaxStockThreshold = table.Column<int>(nullable: false),
+                    OnReorder = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -90,7 +90,6 @@ namespace CatalogService.Migrations
                 column: "CatalogTypeId");
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

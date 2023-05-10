@@ -1,30 +1,44 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.IO;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 
-namespace CatalogService.Controllers;
-
-[ApiController]
-public class ImagesController(CatalogDbContext catalogDbContext, IHostEnvironment environment) : Controller
+namespace CatalogService.Controllers
 {
-    [HttpGet]
-    [Route("api/v1/catalog/items/{catalogItemId:int}/image")]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetImageAsync(int catalogItemId)
+    [ApiController]
+    public class ImagesController : Controller
     {
-        var item = await catalogDbContext.CatalogItems.FindAsync(catalogItemId);
+        private readonly CatalogDbContext _catalogDbContext;
+        private readonly IHostEnvironment _environment;
 
-        if (item is null)
+        public ImagesController(CatalogDbContext catalogDbContext, IHostEnvironment environment)
         {
-            return NotFound();
+            _catalogDbContext = catalogDbContext;
+            _environment = environment;
         }
 
-        var path = Path.Combine(environment.ContentRootPath, "Images", item.PictureFileName);
-
-        if (!System.IO.File.Exists(path))
+        [HttpGet]
+        [Route("api/v1/catalog/items/{catalogItemId:int}/image")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetImageAsync(int catalogItemId)
         {
-            return NotFound();
-        }
+            var item = await _catalogDbContext.CatalogItems.FindAsync(catalogItemId);
 
-        return PhysicalFile(path, "image/jpeg");
+            if (item is null)
+            {
+                return NotFound();
+            }
+
+            var path = Path.Combine(_environment.ContentRootPath, "Images", item.PictureFileName);
+
+            if (!System.IO.File.Exists(path))
+            {
+                return NotFound();
+            }
+
+            return PhysicalFile(path, "image/jpeg");
+        }
     }
 }

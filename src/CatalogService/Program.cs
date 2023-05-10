@@ -1,26 +1,25 @@
-using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddDbContext<CatalogDbContext>(options =>
+namespace CatalogService
 {
-    var connectionString = builder.Configuration.GetConnectionString("CatalogDb") ??
-        throw new InvalidDataException("Missing connection string CatalogDb");
+    public class Program
+    {
+        public static async Task Main(string[] args)
+        {
+            var host = CreateHostBuilder(args).Build();
 
-    options.UseNpgsql(connectionString);
-});
+            await host.Services.InitializeDatabaseAsync();
 
-builder.Services.AddControllers();
+            host.Run();
+        }
 
-builder.Services.AddSwaggerGen();
-
-var app = builder.Build();
-
-app.UseSwagger();
-app.UseSwaggerUI();
-
-app.MapControllers();
-
-await app.Services.InitializeDatabaseAsync();
-
-app.Run();
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
+    }
+}

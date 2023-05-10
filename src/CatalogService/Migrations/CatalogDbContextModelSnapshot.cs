@@ -5,8 +5,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-#nullable disable
-
 namespace CatalogService.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
@@ -16,45 +14,38 @@ namespace CatalogService.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.5")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                .HasAnnotation("ProductVersion", "3.1.32")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63)
+                .HasAnnotation("Relational:Sequence:.catalog_brand_hilo", "'catalog_brand_hilo', '', '1', '10', '', '', 'Int64', 'False'")
+                .HasAnnotation("Relational:Sequence:.catalog_hilo", "'catalog_hilo', '', '1', '10', '', '', 'Int64', 'False'")
+                .HasAnnotation("Relational:Sequence:.catalog_type_hilo", "'catalog_type_hilo', '', '1', '10', '', '', 'Int64', 'False'");
 
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.HasSequence("catalog_brand_hilo")
-                .IncrementsBy(10);
-
-            modelBuilder.HasSequence("catalog_hilo")
-                .IncrementsBy(10);
-
-            modelBuilder.HasSequence("catalog_type_hilo")
-                .IncrementsBy(10);
-
-            modelBuilder.Entity("ApiApplication2.CatalogBrand", b =>
+            modelBuilder.Entity("CatalogService.CatalogBrand", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseHiLo(b.Property<int>("Id"), "catalog_brand_hilo");
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:HiLoSequenceName", "catalog_brand_hilo")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SequenceHiLo);
 
                     b.Property<string>("Brand")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasMaxLength(100);
 
                     b.HasKey("Id");
 
-                    b.ToTable("CatalogBrand", (string)null);
+                    b.ToTable("CatalogBrand");
                 });
 
-            modelBuilder.Entity("ApiApplication2.CatalogItem", b =>
+            modelBuilder.Entity("CatalogService.CatalogItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseHiLo(b.Property<int>("Id"), "catalog_hilo");
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:HiLoSequenceName", "catalog_hilo")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SequenceHiLo);
 
                     b.Property<int>("AvailableStock")
                         .HasColumnType("integer");
@@ -73,8 +64,8 @@ namespace CatalogService.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasMaxLength(50);
 
                     b.Property<bool>("OnReorder")
                         .HasColumnType("boolean");
@@ -94,44 +85,40 @@ namespace CatalogService.Migrations
 
                     b.HasIndex("CatalogTypeId");
 
-                    b.ToTable("Catalog", (string)null);
+                    b.ToTable("Catalog");
                 });
 
-            modelBuilder.Entity("ApiApplication2.CatalogType", b =>
+            modelBuilder.Entity("CatalogService.CatalogType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseHiLo(b.Property<int>("Id"), "catalog_type_hilo");
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:HiLoSequenceName", "catalog_type_hilo")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SequenceHiLo);
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasMaxLength(100);
 
                     b.HasKey("Id");
 
-                    b.ToTable("CatalogType", (string)null);
+                    b.ToTable("CatalogType");
                 });
 
-            modelBuilder.Entity("ApiApplication2.CatalogItem", b =>
+            modelBuilder.Entity("CatalogService.CatalogItem", b =>
                 {
-                    b.HasOne("ApiApplication2.CatalogBrand", "CatalogBrand")
+                    b.HasOne("CatalogService.CatalogBrand", "CatalogBrand")
                         .WithMany()
                         .HasForeignKey("CatalogBrandId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ApiApplication2.CatalogType", "CatalogType")
+                    b.HasOne("CatalogService.CatalogType", "CatalogType")
                         .WithMany()
                         .HasForeignKey("CatalogTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("CatalogBrand");
-
-                    b.Navigation("CatalogType");
                 });
 #pragma warning restore 612, 618
         }
