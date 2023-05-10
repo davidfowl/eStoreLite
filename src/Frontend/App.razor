@@ -1,0 +1,48 @@
+﻿@page "/"
+
+@implements IRazorComponentApplication<App>
+
+@inject CatalogService CatalogService
+
+<html>
+<head>
+    <title>eShopLite</title>
+    <link rel="stylesheet" href="site.css" />
+</head>
+<body>
+    <h3>Catalog</h3>
+
+    @if (catalog is { Data: var data })
+    {
+        <div class="grid">
+            @foreach (var item in data)
+            {
+                <div class="grid-item">
+                    <div class="grid-item-content">
+                        <img src="@item.PictureUri" alt="@item.Name" />
+                        <div class="grid-item-text">
+                            <h4>@item.Name</h4>
+                            <p>@item.Description</p>
+                            <p>@item.Price</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p>Loading...</p>
+    }
+
+</body>
+</html>
+
+@code {
+    Catalog? catalog;
+
+    protected override async Task OnInitializedAsync()
+    {
+        catalog = await CatalogService.GetItemsAsync();
+    }
+}
