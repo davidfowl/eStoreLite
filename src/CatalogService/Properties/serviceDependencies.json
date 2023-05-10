@@ -5,8 +5,7 @@
     },
     "postgresql1": {
       "type": "postgresql",
-      "connectionId": "ConnectionStrings:CatalogDb",
-      "dynamicId": null
+      "connectionId": "ConnectionStrings:CatalogDb"
     }
   }
 }
