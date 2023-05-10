@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+namespace CatalogService;
 public static class CatalogApi
 {
     public static RouteGroupBuilder MapCatalogApi(this IEndpointRouteBuilder routes)
