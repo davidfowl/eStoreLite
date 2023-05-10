@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Components.Endpoints;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpClient<CatalogService>(c =>
@@ -14,6 +16,6 @@ var app = builder.Build();
 
 app.UseStaticFiles();
 
-app.MapRazorComponents<App>();
+app.MapGet("/", (int page = 0) => new RazorComponentResult<App>(new { page }));
 
 app.Run();

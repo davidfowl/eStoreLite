@@ -1,7 +1,5 @@
 ﻿@page "/"
 
-@implements IRazorComponentApplication<App>
-
 @inject CatalogService CatalogService
 
 <html>
@@ -54,7 +52,6 @@
     Catalog? catalog;
     PaginationInfo? paginationInfo;
 
-    [SupplyParameterFromQuery]
     [Parameter]
     public int? Page { get; set; }
 
