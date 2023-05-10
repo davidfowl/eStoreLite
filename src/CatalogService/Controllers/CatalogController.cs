@@ -28,17 +28,7 @@ public class CatalogController(CatalogDbContext catalogContext) : Controller
             .Take(pageSize)
             .ToListAsync();
 
-        ChangeUriPlaceholder(itemsOnPage);
-
         return new PaginatedItemsViewModel<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage);
-    }
-
-    private void ChangeUriPlaceholder(List<CatalogItem> itemsOnPage)
-    {
-        foreach (var item in itemsOnPage)
-        {
-            item.PictureUri = UriHelper.BuildAbsolute(Request.Scheme, Request.Host, path: $"/api/v1/catalog/items/{item.Id}/image");
-        }
     }
 }
 
