@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "StartTimer": {
+      "commandName": "Project",
+      "commandLineArgs": "..\\..\\..\\..\\..\\src\\CatalogService\\bin\\Release\\net8.0\\CatalogService.exe",
+      "environmentVariables": {
+        "CONNECTIONSTRINGS__CATALOGDB": "Server=localhost;Port=5434;Username=postgres;Database=postgres"
+      }
+    }
+  }
+}

@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Frontend", "src\Frontend\Fr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CatalogService", "src\CatalogService\CatalogService.csproj", "{B77987B1-ADCE-463D-9407-5BAE5630B67C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{E3A8751E-8C69-441C-B5D4-E9D86890DE21}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StartTimer", "tools\StartTimer\StartTimer.csproj", "{F3228907-0962-4297-8EE6-865E28278006}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,9 +25,16 @@ Global
 		{B77987B1-ADCE-463D-9407-5BAE5630B67C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B77987B1-ADCE-463D-9407-5BAE5630B67C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B77987B1-ADCE-463D-9407-5BAE5630B67C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3228907-0962-4297-8EE6-865E28278006}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3228907-0962-4297-8EE6-865E28278006}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3228907-0962-4297-8EE6-865E28278006}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3228907-0962-4297-8EE6-865E28278006}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F3228907-0962-4297-8EE6-865E28278006} = {E3A8751E-8C69-441C-B5D4-E9D86890DE21}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CF1FCDC0-E545-4BA0-8689-9BAA5602094C}
