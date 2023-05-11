@@ -1,21 +1,23 @@
-﻿namespace Frontend;
+﻿using System.Text.Json;
+
+namespace Frontend;
 
 public class CatalogService(HttpClient client)
 {
-    public Task<Catalog?> GetItemsAsync(int pageIndex = 0) =>
-        client.GetFromJsonAsync<Catalog>($"/api/v1/catalog/items/type/all/brand?pageIndex={pageIndex}");
+    public async Task<Catalog?> GetItemsAsync(int pageIndex = 0)
+    {
+        var response = await client.GetStringAsync($"/api/v1/catalog/items/type/all/brand?pageIndex={pageIndex}");
+        return JsonSerializer.Deserialize<Catalog>(response, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+    }
 
     public Task<HttpResponseMessage> GetImageAsync(int catalogItemId) =>
         client.GetAsync($"/api/v1/catalog/items/{catalogItemId}/image");
 }
 
-public record Catalog
-{
-    public int PageIndex { get; init; }
-    public int PageSize { get; init; }
-    public int Count { get; init; }
-    public List<CatalogItem> Data { get; init; } = default!;
-}
+public record Catalog(int PageIndex, int PageSize, int Count, List<CatalogItem> Data);
 
 public record CatalogItem
 {

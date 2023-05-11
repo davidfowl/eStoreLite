@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CatalogService;
 
-public record PaginatedItemsViewModel<TEntity>(int PageIndex, int PageSize, long Count, IEnumerable<TEntity> Data);
+public record Catalog(int PageIndex, int PageSize, long Count, List<CatalogItem> Data);
 
 public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbContext(options)
 {

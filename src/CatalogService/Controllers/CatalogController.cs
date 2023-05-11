@@ -9,8 +9,8 @@ public class CatalogController(CatalogDbContext catalogContext) : Controller
 {
     [HttpGet]
     [Route("items/type/all/brand/{catalogBrandId?}")]
-    [ProducesResponseType(typeof(PaginatedItemsViewModel<CatalogItem>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<PaginatedItemsViewModel<CatalogItem>>> ItemsByBrandIdAsync(int? catalogBrandId, [FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 0)
+    [ProducesResponseType(typeof(Catalog), StatusCodes.Status200OK)]
+    public async Task<ActionResult<Catalog>> ItemsByBrandIdAsync(int? catalogBrandId, [FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 0)
     {
         IQueryable<CatalogItem> root = catalogContext.CatalogItems;
 
@@ -27,7 +27,7 @@ public class CatalogController(CatalogDbContext catalogContext) : Controller
             .Take(pageSize)
             .ToListAsync();
 
-        return new PaginatedItemsViewModel<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage);
+        return new Catalog(pageIndex, pageSize, totalItems, itemsOnPage);
     }
 }
 
