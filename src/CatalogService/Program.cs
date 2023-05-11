@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<CatalogDbContext>(options =>
+builder.Services.AddDbContextPool<CatalogDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("CatalogDb") ??
         throw new InvalidDataException("Missing connection string CatalogDb");

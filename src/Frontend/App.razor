@@ -28,12 +28,12 @@
             </div>
 
             <div class="pager">
-                @if (paginationInfo!.ActualPage > 0)
+                @if (paginationInfo.HasPreviousPage)
                 {
                     <a class="previous" href="?page=@(paginationInfo.ActualPage - 1)">Previous</a>
                 }
 
-                @if (paginationInfo.ActualPage < paginationInfo.TotalPages - 1)
+                @if (paginationInfo.HasNextPage)
                 {
                     <a class="next" href="?page=@(paginationInfo.ActualPage + 1)">Next</a>
                 }
@@ -49,7 +49,7 @@
 
 @code {
     Catalog? catalog;
-    PaginationInfo? paginationInfo;
+    PaginationInfo paginationInfo = new(ActualPage: 0, HasPreviousPage: false, HasNextPage: false);
 
     [Parameter]
     public int? Page { get; set; }
@@ -68,8 +68,8 @@
 
         // Calculate the total number of pages
         var totalPages = (int)Math.Ceiling(catalog.Count / (decimal)itemsPerPage);
-        paginationInfo = new PaginationInfo(catalog.PageIndex, catalog.PageSize, catalog.Data.Count, totalPages);
+        paginationInfo = new PaginationInfo(catalog.PageIndex, catalog.PageSize > 0, catalog.PageIndex - 1 < totalPages);
     }
 
-    record PaginationInfo(int ActualPage, int ItemsPerPage, int TotalItems, int TotalPages);
+    record PaginationInfo(int ActualPage, bool HasPreviousPage, bool HasNextPage);
 }
