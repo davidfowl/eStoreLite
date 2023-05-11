@@ -9,7 +9,7 @@ public static class CatalogApi
 
         group.WithTags("Catalog");
 
-        group.MapGet("items/type/all/brand/{catalogBrandId?}", async (int? catalogBrandId, CatalogDbContext catalogContext, int pageSize = 10, int pageIndex = 0) =>
+        group.MapGet("items/type/all/brand/{catalogBrandId?}", async (int? catalogBrandId, CatalogDbContext catalogContext, int? before, int? after, int pageSize = 10) =>
         {
             IQueryable<CatalogItem> root = catalogContext.CatalogItems.AsNoTracking();
 
@@ -18,16 +18,31 @@ public static class CatalogApi
                 root = root.Where(ci => ci.CatalogBrandId == catalogBrandId);
             }
 
-            var totalItems = await root
-                .LongCountAsync();
+            root = root.OrderBy(ci => ci.Id);
 
-            var itemsOnPage = await root
-                .OrderBy(ci => ci.CatalogBrandId)
-                .Skip(pageSize * pageIndex)
-                .Take(pageSize)
-                .ToListAsync();
+            if (before.HasValue)
+            {
+                root = root.Where(ci => ci.Id < before);
+            }
+            else if (after.HasValue)
+            {
+                root = root.Where(ci => ci.Id >= after);
+            }
 
-            return new PaginatedItemsViewModel<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage);
+            var itemsOnPage = await root.Take(pageSize + 1).ToListAsync();
+
+            var (firstId, lastId) = itemsOnPage switch
+            {
+                [] => (0, 0),
+                [var only] => (only.Id, only.Id),
+                [var first, .., var last] => (first.Id, last.Id)
+            };
+
+            return new Catalog(
+                firstId,
+                lastId,
+                itemsOnPage.Count < pageSize,
+                itemsOnPage.Take(pageSize));
         });
 
         group.MapGet("items/{catalogItemId:int}/image", async (int catalogItemId, CatalogDbContext catalogDbContext, IHostEnvironment environment) =>

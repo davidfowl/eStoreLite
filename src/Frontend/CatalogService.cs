@@ -2,17 +2,21 @@
 
 public class CatalogService(HttpClient client)
 {
-    public Task<Catalog?> GetItemsAsync(int pageIndex = 0) =>
-        client.GetFromJsonAsync<Catalog>($"/api/v1/catalog/items/type/all/brand?pageIndex={pageIndex}");
+    public Task<Catalog?> GetItemsAsync(int? before = null, int? after = null)
+    {
+        var qs = (before, after) switch
+        {
+            (null, null) => "",
+            (var b, null) => $"?before={b}",
+            (null, var a) => $"?after={a}",
+            (var b, var a) => $"?before={b}&after={a}"
+        };
+
+        return client.GetFromJsonAsync<Catalog>($"/api/v1/catalog/items/type/all/brand{qs}");
+    }
 }
 
-public record Catalog
-{
-    public int PageIndex { get; init; }
-    public int PageSize { get; init; }
-    public int Count { get; init; }
-    public List<CatalogItem> Data { get; init; } = default!;
-}
+public record Catalog(int FirstId, int NextId, bool IsLastPage, IEnumerable<CatalogItem> Data);
 
 public record CatalogItem
 {

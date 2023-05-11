@@ -18,7 +18,7 @@ var app = builder.Build();
 
 app.UseStaticFiles();
 
-app.MapGet("/", (int page = 0) => new RazorComponentResult<App>(new { page }));
+app.MapGet("/", (int? before, int? after) => new RazorComponentResult<App>(new { before, after }));
 
 app.MapForwarder("/catalog/images/{id}", catalogServiceUrl, (context, proxyRequest, destinationPrefix, token) =>
 {
