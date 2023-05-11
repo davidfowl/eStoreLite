@@ -58,7 +58,7 @@
 - Disabling tracking
 - Change to keyset pagination
 - Use DbContext pooling
-- Disable DbContext pooling
+- Disable thead safety checks
 - Using compiled queries
 - Using compiled models
 - Using raw SQL
