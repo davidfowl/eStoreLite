@@ -6,11 +6,11 @@
     "postgresql1": {
       "containerPorts": "5434:5432",
       "secretStore": "LocalSecretsFile",
-      "containerName": "postgresql",
+      "containerName": "postgresql-net5",
       "containerImage": "postgres",
-      "resourceId": null,
       "type": "postgresql.container",
-      "connectionId": "ConnectionStrings:CatalogDb"
+      "connectionId": "ConnectionStrings:CatalogDb",
+      "dynamicId": null
     }
   }
 }
