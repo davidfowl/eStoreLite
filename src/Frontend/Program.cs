@@ -20,15 +20,6 @@ app.UseStaticFiles();
 
 app.MapGet("/", (int? before, int? after) => new RazorComponentResult<App>(new { before, after }));
 
-app.MapForwarder("/catalog/images/{id}", catalogServiceUrl, (context, proxyRequest, destinationPrefix, token) =>
-{
-    if (context.Request.RouteValues["id"] is string id)
-    {
-        // Rewrite the path to point to the catalog service's image endpoint
-        proxyRequest.RequestUri = new Uri($"{destinationPrefix}/api/v1/catalog/items/{id}/image");
-    }
-
-    return ValueTask.CompletedTask;
-});
+app.MapForwarder("/catalog/images/{id}", catalogServiceUrl, "/api/v1/catalog/items/{id}/image");
 
 app.Run();

@@ -1,22 +1,20 @@
 ﻿using Yarp.ReverseProxy.Forwarder;
+using Yarp.ReverseProxy.Transforms;
+using Yarp.ReverseProxy.Transforms.Builder;
 
 namespace Frontend;
 
 public static class YarpExtensions
 {
     // Helper to wrap some ceremony for transforming the outgoing proxied request
-    public static IEndpointConventionBuilder MapForwarder(this IEndpointRouteBuilder routes, string pattern, string destinationPrefix, Func<HttpContext, HttpRequestMessage, string, CancellationToken, ValueTask> transform)
+    public static IEndpointConventionBuilder MapForwarder(this IEndpointRouteBuilder routes, string pattern, string destinationPrefix, string targetPath)
     {
-        return routes.MapForwarder(pattern, destinationPrefix, new ForwarderRequestConfig(), new DelegateTransformer(transform));
-    }
-
-    private class DelegateTransformer(Func<HttpContext, HttpRequestMessage, string, CancellationToken, ValueTask> transform) : HttpTransformer
-    {
-        public override async ValueTask TransformRequestAsync(HttpContext httpContext, HttpRequestMessage proxyRequest, string destinationPrefix, CancellationToken cancellationToken)
+        var transformBuilder = routes.ServiceProvider.GetRequiredService<ITransformBuilder>();
+        var transform = transformBuilder.Create(c =>
         {
-            await transform(httpContext, proxyRequest, destinationPrefix, cancellationToken);
+            c.AddPathRouteValues(targetPath);
+        });
 
-            await base.TransformRequestAsync(httpContext, proxyRequest, destinationPrefix, cancellationToken);
-        }
+        return routes.MapForwarder(pattern, destinationPrefix, new ForwarderRequestConfig(), transform);
     }
 }
