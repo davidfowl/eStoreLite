@@ -29,6 +29,7 @@ public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbCo
             root = root.Where(ci => ci.CatalogBrandId == catalogBrandId);
         }
 
+        // https://learn.microsoft.com/en-us/ef/core/querying/pagination#keyset-pagination
         if (before.HasValue)
         {
             root = root.Where(ci => ci.Id < before);
