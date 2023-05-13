@@ -8,6 +8,7 @@ public record Catalog(int FirstId, int NextId, bool IsLastPage, IEnumerable<Cata
 
 public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbContext(options)
 {
+    // https://learn.microsoft.com/en-us/ef/core/performance/advanced-performance-topics?tabs=with-di%2Cexpression-api-with-constant#compiled-queries
     private static class Queries
     {
         public static readonly Func<CatalogDbContext, int?, int?, int?, int, IAsyncEnumerable<CatalogItem>> GetCatalogItemsQuery = EF.CompileAsyncQuery((CatalogDbContext context, int? catalogBrandId, int? before, int? after, int pageSize) =>
@@ -24,6 +25,7 @@ public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbCo
         return ToListAsync(Queries.GetCatalogItemsQuery(this, catalogBrandId, before, after, pageSize));
     }
 
+    // https://learn.microsoft.com/en-us/ef/core/querying/sql-queries
     public Task<List<CatalogItem>> GetCatalogItemsSqlAsync(int? catalogBrandId, int? before, int? after, int pageSize)
     {
         var catalogBrandIdParameter = new NpgsqlParameter<int?>(nameof(catalogBrandId), catalogBrandId);
