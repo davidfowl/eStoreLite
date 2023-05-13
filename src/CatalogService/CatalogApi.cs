@@ -62,7 +62,9 @@ public static class CatalogApi
             }
 
             return Results.File(path, "image/jpeg");
-        });
+        })
+        .Produces(404)
+        .Produces(200, contentType: "image/jpeg");
 
         return group;
     }
