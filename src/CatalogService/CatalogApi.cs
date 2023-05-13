@@ -1,6 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿namespace CatalogService;
 
-namespace CatalogService;
 public static class CatalogApi
 {
     public static RouteGroupBuilder MapCatalogApi(this IEndpointRouteBuilder routes)
@@ -11,25 +10,7 @@ public static class CatalogApi
 
         group.MapGet("items/type/all/brand/{catalogBrandId?}", async (int? catalogBrandId, CatalogDbContext catalogContext, int? before, int? after, int pageSize = 10) =>
         {
-            IQueryable<CatalogItem> root = catalogContext.CatalogItems.AsNoTracking();
-
-            if (catalogBrandId.HasValue)
-            {
-                root = root.Where(ci => ci.CatalogBrandId == catalogBrandId);
-            }
-
-            root = root.OrderBy(ci => ci.Id);
-
-            if (before.HasValue)
-            {
-                root = root.Where(ci => ci.Id < before);
-            }
-            else if (after.HasValue)
-            {
-                root = root.Where(ci => ci.Id >= after);
-            }
-
-            var itemsOnPage = await root.Take(pageSize + 1).ToListAsync();
+            var itemsOnPage = await catalogContext.GetCatalogItemsAsync(catalogBrandId, before, after, pageSize);
 
             var (firstId, lastId) = itemsOnPage switch
             {
