@@ -3,13 +3,9 @@
 namespace CatalogService;
 public static class CatalogApi
 {
-    public static RouteGroupBuilder MapCatalogApi(this IEndpointRouteBuilder routes)
+    public static IEndpointRouteBuilder MapCatalogApi(this IEndpointRouteBuilder routes)
     {
-        var group = routes.MapGroup("/api/v1/catalog");
-
-        group.WithTags("Catalog");
-
-        group.MapGet("items/type/all/brand/{catalogBrandId?}", async (int? catalogBrandId, CatalogDbContext catalogContext, int? before, int? after, int pageSize = 10) =>
+        routes.MapGet("/api/v1/catalog/items/type/all/brand/{catalogBrandId?}", async (int? catalogBrandId, CatalogDbContext catalogContext, int? before, int? after, int pageSize = 10) =>
         {
             IQueryable<CatalogItem> root = catalogContext.CatalogItems.AsNoTracking();
 
@@ -45,7 +41,7 @@ public static class CatalogApi
                 itemsOnPage.Take(pageSize));
         });
 
-        group.MapGet("items/{catalogItemId:int}/image", async (int catalogItemId, CatalogDbContext catalogDbContext, IHostEnvironment environment) =>
+        routes.MapGet("\"/api/v1/catalog/items/{catalogItemId:int}/image", async (int catalogItemId, CatalogDbContext catalogDbContext, IHostEnvironment environment) =>
         {
             var item = await catalogDbContext.CatalogItems.FindAsync(catalogItemId);
 
@@ -64,6 +60,6 @@ public static class CatalogApi
             return Results.File(path, "image/jpeg");
         });
 
-        return group;
+        return routes;
     }
 }
