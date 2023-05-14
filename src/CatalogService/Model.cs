@@ -8,7 +8,7 @@ public record Catalog(int FirstId, int NextId, bool IsLastPage, IEnumerable<Cata
 
 public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbContext(options)
 {
-    // https://learn.microsoft.com/ef/core/performance/advanced-performance-topics?tabs=with-di%2Cexpression-api-with-constant#compiled-queries
+    // https://learn.microsoft.com/ef/core/performance/advanced-performance-topics#compiled-queries
     private static class Queries
     {
         public static readonly Func<CatalogDbContext, int?, int?, int?, int, IAsyncEnumerable<CatalogItem>> GetCatalogItemsQuery = EF.CompileAsyncQuery((CatalogDbContext context, int? catalogBrandId, int? before, int? after, int pageSize) =>
@@ -22,6 +22,7 @@ public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbCo
 
     public Task<List<CatalogItem>> GetCatalogItemsAsync(int? catalogBrandId, int? before, int? after, int pageSize)
     {
+        // https://learn.microsoft.com/ef/core/performance/efficient-querying#tracking-no-tracking-and-identity-resolution
         IQueryable<CatalogItem> root = CatalogItems.AsNoTracking().OrderBy(ci => ci.Id);
 
         if (catalogBrandId.HasValue)

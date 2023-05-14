@@ -9,11 +9,11 @@ builder.Services.AddDbContextPool<CatalogDbContext>(options =>
         throw new InvalidDataException("Missing connection string CatalogDb");
 
     options.UseNpgsql(connectionString)
-           // https://learn.microsoft.com/ef/core/performance/advanced-performance-topics?tabs=with-di%2Cexpression-api-with-constant#compiled-models
+           // https://learn.microsoft.com/ef/core/performance/advanced-performance-topics#compiled-models
            .UseModel(CatalogDbContextModel.Instance);
 
     // The need for speed, use with caution!
-    // https://learn.microsoft.com/en-us/ef/core/performance/advanced-performance-topics?tabs=with-di%2Cexpression-api-with-constant#reducing-runtime-overhead
+    // https://learn.microsoft.com/ef/core/performance/advanced-performance-topics#reducing-runtime-overhead
     options.EnableThreadSafetyChecks(enableChecks: false);
 });
 
