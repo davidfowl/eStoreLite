@@ -1,18 +1,21 @@
-﻿namespace Frontend;
+﻿using System.Globalization;
+
+namespace Frontend;
 
 public class CatalogService(HttpClient client)
 {
     public Task<Catalog?> GetItemsAsync(int? before = null, int? after = null)
     {
-        var qs = (before, after) switch
+        // Make the query string with encoded parameters
+        var query = (before, after) switch
         {
-            (null, null) => "",
-            (var b, null) => $"?before={b}",
-            (null, var a) => $"?after={a}",
-            (var b, var a) => $"?before={b}&after={a}"
+            (null, null) => default,
+            (int b, null) => QueryString.Create("before", b.ToString(CultureInfo.InvariantCulture)),
+            (null, int a) => QueryString.Create("after", a.ToString(CultureInfo.InvariantCulture)),
+            _ => throw new InvalidOperationException(),
         };
 
-        return client.GetFromJsonAsync<Catalog>($"/api/v1/catalog/items/type/all/brand{qs}");
+        return client.GetFromJsonAsync<Catalog>($"/api/v1/catalog/items/type/all/brand{query}");
     }
 }
 
