@@ -65,7 +65,7 @@ public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbCo
             LIMIT {pageSize + 1}
         """;
 
-        return CatalogItems.FromSqlInterpolated(sql).ToListAsync();
+        return CatalogItems.FromSql(sql).ToListAsync();
     }
 
     public DbSet<CatalogItem> CatalogItems => Set<CatalogItem>();

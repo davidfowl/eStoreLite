@@ -9,6 +9,7 @@ builder.Services.AddDbContextPool<CatalogDbContext>(options =>
         throw new InvalidDataException("Missing connection string CatalogDb");
 
     options.UseNpgsql(connectionString)
+           // Compiled model: this improves the startup time
            // https://learn.microsoft.com/ef/core/performance/advanced-performance-topics#compiled-models
            .UseModel(CatalogDbContextModel.Instance);
 
