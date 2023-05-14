@@ -5,6 +5,6 @@ to improve the performance of the application.
 
 The application stack is:
 
-- **FrontEnd** - A Blazor rendered front end
+- **FrontEnd** - A Blazor SSR (server side rendering, not to be confused with Blazor server!)  front end.
 - **CatalogService** - An API that returns the list of products. It uses minimal APIs for the REST API and EntityFramework Core and PostgreSQL for data access.
 
