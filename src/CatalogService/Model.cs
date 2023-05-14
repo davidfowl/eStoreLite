@@ -23,24 +23,15 @@ public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbCo
     public Task<List<CatalogItem>> GetCatalogItemsAsync(int? catalogBrandId, int? before, int? after, int pageSize)
     {
         // https://learn.microsoft.com/ef/core/performance/efficient-querying#tracking-no-tracking-and-identity-resolution
-        IQueryable<CatalogItem> root = CatalogItems.AsNoTracking().OrderBy(ci => ci.Id);
 
-        if (catalogBrandId.HasValue)
-        {
-            root = root.Where(ci => ci.CatalogBrandId == catalogBrandId);
-        }
-
-        // https://learn.microsoft.com/ef/core/querying/pagination#keyset-pagination
-        if (before.HasValue)
-        {
-            root = root.Where(ci => ci.Id < before);
-        }
-        else if (after.HasValue)
-        {
-            root = root.Where(ci => ci.Id >= after);
-        }
-
-        return root.Take(pageSize + 1).ToListAsync();
+        return CatalogItems.AsNoTracking()
+                    .OrderBy(ci => ci.Id)
+                    .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
+                    // https://learn.microsoft.com/ef/core/querying/pagination#keyset-pagination
+                    .Where(ci => before == null || ci.Id < before)
+                    .Where(ci => after == null || ci.Id >= after)
+                    .Take(pageSize + 1)
+                    .ToListAsync();
     }
 
     public Task<List<CatalogItem>> GetCatalogItemsCompiledAsync(int? catalogBrandId, int? before, int? after, int pageSize)
