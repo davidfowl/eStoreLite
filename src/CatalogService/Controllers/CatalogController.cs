@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace CatalogService.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
-public class CatalogController(CatalogDbContext catalogContext) : Controller
+public class CatalogController(CatalogDbContext catalogContext, IHostEnvironment environment) : Controller
 {
     [HttpGet]
     [Route("items/type/all/brand/{catalogBrandId?}")]
@@ -28,6 +29,31 @@ public class CatalogController(CatalogDbContext catalogContext) : Controller
             .ToListAsync();
 
         return new Catalog(pageIndex, pageSize, totalItems, itemsOnPage);
+    }
+
+    [HttpGet]
+    [Route("items/{catalogItemId:int}/image")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetImageAsync(int catalogItemId)
+    {
+        var item = await catalogContext.CatalogItems.FindAsync(catalogItemId);
+
+        if (item is null)
+        {
+            return NotFound();
+        }
+
+        var path = Path.Combine(environment.ContentRootPath, "Images", item.PictureFileName);
+
+        if (!System.IO.File.Exists(path))
+        {
+            return NotFound();
+        }
+
+        var bytes = await System.IO.File.ReadAllBytesAsync(path);
+
+        return File(bytes, "image/jpeg");
     }
 }
 
