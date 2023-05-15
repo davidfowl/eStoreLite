@@ -38,17 +38,23 @@
             </div>
 
             <div class="pager">
-                <a class="previous button" disable=@(paginationInfo.HasPreviousPage is false) 
+                @if (paginationInfo.HasPreviousPage)
+                {
+                    <a class="previous button" disable=@(paginationInfo.HasPreviousPage is false) 
                     href="?before=@paginationInfo.FirstId">
                     <i class="fa fa-arrow-left" aria-hidden="true"></i>
                     Previous
                 </a>
+                }
 
-                <a class="next button" disable=@(paginationInfo.HasNextPage is false)
-                   href="?after=@paginationInfo.LastId">
+                @if (paginationInfo.HasNextPage)
+                {
+                    <a class="next button" disable=@(paginationInfo.HasNextPage is false)
+                    href="?after=@paginationInfo.LastId">
                     Next
                     <i class="fa fa-arrow-right" aria-hidden="true"></i>
                 </a>
+                }
             </div>
         }
         else
