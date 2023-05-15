@@ -4,9 +4,11 @@
 <head>
     <title>eShopLite</title>
     <link rel="stylesheet" href="site.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css"
+          integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
 </head>
 <body>
-    <h3>Catalog</h3>
+    <h2 class="text-align-center">Product Catalog</h2>
 
     <div class="container">
         @if (catalog is { Data: var data })
@@ -17,10 +19,18 @@
                     <div class="grid-item">
                         <div class="grid-item-content">
                             <img src="catalog/images/@item.Id" alt="@item.Name" />
+                            <div class="quick-view-overlay">
+                                <i class="fa fa-search-plus" aria-hidden="true"></i>
+                            </div>
                             <div class="grid-item-text">
-                                <h4>@item.Name</h4>
-                                <p>@item.Description</p>
-                                <p>@item.Price</p>
+                                <h4 class="pointer-events-none">@item.Name</h4>
+                                <p class="item-description pointer-events-none">@item.Description</p>
+                                <div class="d-flex justify-space-evenly align-items-center">
+                                    <p class="item-price pointer-events-none">@item.Price.ToString("C")</p>
+                                    <button class="align-content-end cart-button" title=@($"Add {@item.Name} to cart?")>
+                                        <i class="fa fa-cart-plus" aria-hidden="true"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -28,15 +38,17 @@
             </div>
 
             <div class="pager">
-                @if (paginationInfo.HasPreviousPage)
-                {
-                    <a class="previous" href="?before=@paginationInfo.FirstId">Previous</a>
-                }
+                <a class="previous button" disable=@(paginationInfo.HasPreviousPage is false) 
+                    href="?before=@paginationInfo.FirstId">
+                    <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                    Previous
+                </a>
 
-                @if (paginationInfo.HasNextPage)
-                {
-                    <a class="next" href="?after=@paginationInfo.LastId">Next</a>
-                }
+                <a class="next button" disable=@(paginationInfo.HasNextPage is false)
+                   href="?after=@paginationInfo.LastId">
+                    Next
+                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                </a>
             </div>
         }
         else

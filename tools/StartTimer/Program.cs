@@ -20,7 +20,7 @@ if (sepIndex >= 0)
 TimeSpan started = default;
 TimeSpan firstOutput = default;
 TimeSpan readyToServe = default ;
-TimeSpan afterFirstReuqest = default;
+TimeSpan afterFirstRequest = default;
 var listeningOnUrl = "";
 var pid = -1;
 var sendRequestTask = Task.CompletedTask;
@@ -54,9 +54,9 @@ if (readyToServe != default)
 {
     Console.WriteLine($"Ready to accept requests after {readyToServe.TotalMilliseconds:N2} ms");
 }
-if (afterFirstReuqest != default)
+if (afterFirstRequest != default)
 {
-    Console.WriteLine($"First request completed after {afterFirstReuqest.TotalMilliseconds:N2} ms");
+    Console.WriteLine($"First request completed after {afterFirstRequest.TotalMilliseconds:N2} ms");
 }
 
 return 0;
@@ -105,6 +105,6 @@ async Task SendRequestAndStopProcess()
     using var httpClient = new HttpClient();
     var response = await httpClient.GetAsync(listeningOnUrl);
     
-    afterFirstReuqest = sw.Elapsed;
+    afterFirstRequest = sw.Elapsed;
     ProcessUtil.KillProcess(pid);
 }
