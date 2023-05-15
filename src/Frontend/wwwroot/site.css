@@ -125,18 +125,26 @@
         background-color: whitesmoke;
         border-bottom-right-radius: 8px;
         border-top-right-radius: 8px;
-        border: 1px solid;
+        border: 2px solid var(--border-color);
         border-left: none;
     }
+
+        .pager .next .fa {
+            padding-left: .5rem;
+        }
 
     .pager .previous {
         padding: .5rem 1.5rem;
         background-color: whitesmoke;
         border-bottom-left-radius: 8px;
         border-top-left-radius: 8px;
-        border: 1px solid;
+        border: 2px solid var(--border-color);
         border-right: none;
     }
+
+        .pager .previous .fa {
+            padding-right: .5rem;
+        }
 
 .cart-button:not(:disabled) {
     font-size: 1.5rem;
