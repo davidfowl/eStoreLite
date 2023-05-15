@@ -45,7 +45,7 @@
                 </a>
 
                 <a class="next button" disable=@(paginationInfo.HasNextPage is false)
-                   href="?after=@(paginationInfo.NextId - 1)">
+                   href="?after=@paginationInfo.NextId">
                     Next
                     <i class="fa fa-arrow-right" aria-hidden="true"></i>
                 </a>
