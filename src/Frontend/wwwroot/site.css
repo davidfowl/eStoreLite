@@ -4,6 +4,12 @@
     --border-color-hover: #aaa;
     --text-color: #555;
     --text-heading-color: #222;
+    --dotnet-purple-color: #512bd4;
+}
+
+html {
+    background: var(--dotnet-purple-color);
+    background: linear-gradient(0deg, rgba(81,43,212,0.15) 0%, rgba(255,255,255,1) 100%);
 }
 
 * {
@@ -52,6 +58,7 @@
     border: 2px solid var(--border-color);
     border-radius: 6px;
     box-shadow: var(--border-color) 0px 0px 5px;
+    background-color: whitesmoke;
 }
 
     .grid-item:hover {
@@ -69,14 +76,15 @@
         border-top-right-radius: 4px;
     }
 
-    .grid-item-content > img:hover {
+    .grid-item-content:hover > img {
         cursor: pointer;
         filter: brightness(90%);
+        overflow: hidden;
         transition: all ease-in-out .25s;
     }
 
     .grid-item-content:hover .quick-view-overlay {
-        filter: brightness(110%);
+        filter: brightness(120%);
     }
 
 .quick-view-overlay {
@@ -164,10 +172,11 @@
     border-radius: 4rem;
     padding: .4rem .8rem;
     background-color: transparent;
-    transition: all ease-in-out .5s;
+    transition: all ease-in-out .25s;
 }
 
     .cart-button:not(:disabled):hover {
+        color: pink;
         border-color: var(--border-color-hover);
-        background-color: var(--border-color);
+        background-color: black;
     }
