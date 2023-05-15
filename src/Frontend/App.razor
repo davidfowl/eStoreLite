@@ -16,7 +16,7 @@
             <div class="grid">
                 @foreach (var item in data)
                 {
-                    <div class="grid-item">
+                    <div class="grid-item" data-id="@item.Id">
                         <div class="grid-item-content">
                             <img src="catalog/images/@item.Id" alt="@item.Name" />
                             <div class="quick-view-overlay">
@@ -38,23 +38,17 @@
             </div>
 
             <div class="pager">
-                @if (paginationInfo.HasPreviousPage)
-                {
-                    <a class="previous button" disable=@(paginationInfo.HasPreviousPage is false) 
-                    href="?before=@paginationInfo.FirstId">
+                <a class="previous button" disable=@(paginationInfo.HasPreviousPage is false)
+                   href="?before=@paginationInfo.FirstId">
                     <i class="fa fa-arrow-left" aria-hidden="true"></i>
                     Previous
                 </a>
-                }
 
-                @if (paginationInfo.HasNextPage)
-                {
-                    <a class="next button" disable=@(paginationInfo.HasNextPage is false)
-                    href="?after=@paginationInfo.LastId">
+                <a class="next button" disable=@(paginationInfo.HasNextPage is false)
+                   href="?after=@paginationInfo.LastId">
                     Next
                     <i class="fa fa-arrow-right" aria-hidden="true"></i>
                 </a>
-                }
             </div>
         }
         else

@@ -8,6 +8,7 @@
 
 * {
     font-family: var(--font-family);
+    user-select: none;
 }
 
 .d-flex {
@@ -23,7 +24,7 @@
 }
 
 .align-content-end {
-    align-content: flex-end
+    align-content: flex-end;
 }
 
 .text-align-center {
@@ -61,7 +62,6 @@
 .grid-item-content {
     display: flex;
     flex-direction: column;
-    transition: all ease-in-out .5s;
 }
 
     .grid-item-content img {
@@ -72,6 +72,11 @@
     .grid-item-content > img:hover {
         cursor: pointer;
         filter: brightness(90%);
+        transition: all ease-in-out .25s;
+    }
+
+    .grid-item-content:hover .quick-view-overlay {
+        filter: brightness(110%);
     }
 
 .quick-view-overlay {
@@ -107,18 +112,24 @@
     justify-content: center;
     align-items: center;
     margin-top: 1rem;
-    font-size: 1.2rem
+    font-size: 1.2rem;
 }
 
-    .pager .button[disable] {
-        pointer-events: none;
-        color: var(--text-color);
+    .pager .button {
+        text-decoration: none;
+        color: black;
     }
 
-    .pager .button:not([disable]):hover {
-        transition: all ease-in-out .5s;
-        background-color: var(--border-color);
-    }
+        .pager .button[disable] {
+            pointer-events: none;
+            user-select: none;
+            color: #999;
+        }
+
+        .pager .button:not([disable]):hover {
+            transition: all ease-in-out .5s;
+            background-color: var(--border-color);
+        }
 
     .pager .next {
         padding: .5rem 1.5rem;
