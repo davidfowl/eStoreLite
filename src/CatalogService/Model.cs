@@ -15,7 +15,7 @@ public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbCo
            context.CatalogItems.AsNoTracking()
                   .OrderBy(ci => ci.Id)
                   .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
-                  .Where(ci => before == null || ci.Id < before)
+                  .Where(ci => before == null || ci.Id <= before)
                   .Where(ci => after == null || ci.Id > after)
                   .Take(pageSize + 1));
     }
@@ -28,7 +28,7 @@ public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbCo
                     .OrderBy(ci => ci.Id)
                     .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
                     // https://learn.microsoft.com/ef/core/querying/pagination#keyset-pagination
-                    .Where(ci => before == null || ci.Id < before)
+                    .Where(ci => before == null || ci.Id <= before)
                     .Where(ci => after == null || ci.Id > after)
                     .Take(pageSize + 1)
                     .ToListAsync();
@@ -50,7 +50,7 @@ public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbCo
             SELECT *
             FROM "Catalog" AS c
             WHERE ({catalogBrandIdParameter} IS NULL OR c."CatalogBrandId" = {catalogBrandIdParameter})
-            AND ({beforeParameter} IS NULL OR c."Id" < {beforeParameter})
+            AND ({beforeParameter} IS NULL OR c."Id" <= {beforeParameter})
             AND ({afterParameter} IS NULL OR c."Id" > {afterParameter})
             ORDER BY c."Id"
             LIMIT {pageSize + 1}

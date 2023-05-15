@@ -45,7 +45,7 @@
                 </a>
 
                 <a class="next button" disable=@(paginationInfo.HasNextPage is false)
-                   href="?after=@paginationInfo.LastId">
+                   href="?after=@(paginationInfo.NextId - 1)">
                     Next
                     <i class="fa fa-arrow-right" aria-hidden="true"></i>
                 </a>
@@ -61,7 +61,7 @@
 
 @code {
     Catalog? catalog;
-    PaginationInfo paginationInfo = new(FirstId: 0, LastId: 0, HasPreviousPage: false, HasNextPage: false);
+    PaginationInfo paginationInfo = new(FirstId: 0, NextId: 0, HasPreviousPage: false, HasNextPage: false);
 
     [Parameter]
     public int? Before { get; set; }
@@ -81,5 +81,5 @@
         paginationInfo = new PaginationInfo(catalog.FirstId, catalog.NextId, catalog.FirstId > 1, !catalog.IsLastPage);
     }
 
-    record PaginationInfo(int FirstId, int LastId, bool HasPreviousPage, bool HasNextPage);
+    record PaginationInfo(int FirstId, int NextId, bool HasPreviousPage, bool HasNextPage);
 }

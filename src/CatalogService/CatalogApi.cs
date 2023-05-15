@@ -12,7 +12,7 @@ public static class CatalogApi
         {
             var itemsOnPage = await catalogContext.GetCatalogItemsAsync(catalogBrandId, before, after, pageSize);
 
-            var (firstId, lastId) = itemsOnPage switch
+            var (firstId, nextId) = itemsOnPage switch
             {
                 [] => (0, 0),
                 [var only] => (only.Id, only.Id),
@@ -21,7 +21,7 @@ public static class CatalogApi
 
             return new Catalog(
                 firstId,
-                lastId,
+                nextId,
                 itemsOnPage.Count < pageSize,
                 itemsOnPage.Take(pageSize));
         });
