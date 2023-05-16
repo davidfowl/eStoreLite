@@ -10,7 +10,7 @@ public interface ICatalogDb
     Task<CatalogItem?> GetCatalogItemAsync(int catalogItemId);
 }
 
-public class CatalogDb(NpgsqlDataSource dataSource) : ICatalogDb
+public sealed class CatalogDb(NpgsqlDataSource dataSource) : ICatalogDb
 {
     public Task<CatalogItem?> GetCatalogItemAsync(int catalogItemId)
     {

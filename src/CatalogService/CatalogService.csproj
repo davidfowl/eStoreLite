@@ -7,12 +7,11 @@
     <InvariantGlobalization>true</InvariantGlobalization>
     <UserSecretsId>87c68e91-a449-40e3-9da8-10f837c73f68</UserSecretsId>
     <LangVersion>preview</LangVersion>
+    <PublishAot>true</PublishAot>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0-preview.4.*" />
     <PackageReference Include="Nanorm.Npgsql" Version="0.0.4" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>

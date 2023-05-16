@@ -1,6 +1,4 @@
-﻿using Npgsql;
-
-namespace CatalogService;
+﻿namespace CatalogService;
 
 public static class CatalogApi
 {
@@ -10,9 +8,11 @@ public static class CatalogApi
 
         group.WithTags("Catalog");
 
-        group.MapGet("items/type/all/brand/{catalogBrandId?}", async (int? catalogBrandId, ICatalogDb db, int? before, int? after, int pageSize = 8) =>
+        group.MapGet("items/type/all/brand/{catalogBrandId?}", async (int? catalogBrandId, ICatalogDb db, int? before, int? after, int? pageSize) =>
         {
-            var itemsOnPage = await db.GetCatalogItemsAsync(catalogBrandId, before, after, pageSize);
+            var ps = pageSize ?? 8;
+
+            var itemsOnPage = await db.GetCatalogItemsAsync(catalogBrandId, before, after, ps);
 
             var (firstId, nextId) = itemsOnPage switch
             {
@@ -24,8 +24,8 @@ public static class CatalogApi
             return new Catalog(
                 firstId,
                 nextId,
-                itemsOnPage.Count < pageSize,
-                itemsOnPage.Take(pageSize));
+                itemsOnPage.Count < ps,
+                itemsOnPage.Take(ps));
         });
 
         group.MapGet("items/{catalogItemId:int}/image", async (int catalogItemId, ICatalogDb db, IHostEnvironment environment) =>

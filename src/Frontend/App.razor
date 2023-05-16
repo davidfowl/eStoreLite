@@ -54,6 +54,10 @@
                 </a>
             </div>
         }
+        else if (loadingFailed)
+        {
+            <p>Failed to load catalog.</p>
+        }
         else
         {
             <p>Loading...</p>
@@ -65,6 +69,7 @@
 </html>
 
 @code {
+    bool loadingFailed;
     Catalog? catalog;
     PaginationInfo paginationInfo = new(FirstId: 0, NextId: 0, HasPreviousPage: false, HasNextPage: false);
 
@@ -76,10 +81,18 @@
 
     protected override async Task OnInitializedAsync()
     {
-        catalog = await CatalogService.GetItemsAsync(Before, After);
-
-        if (catalog is null)
+        try
         {
+            catalog = await CatalogService.GetItemsAsync(Before, After);
+
+            if (catalog is null)
+            {
+                return;
+            }
+        }
+        catch
+        {
+            loadingFailed = true;
             return;
         }
 

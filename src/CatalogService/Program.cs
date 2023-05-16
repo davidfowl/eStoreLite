@@ -1,6 +1,4 @@
-using Npgsql;
-
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateSlimBuilder(args);
 
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
@@ -15,16 +13,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 builder.Services.AddCatalogDb(builder.Configuration);
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
 var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
 
 app.MapCatalogApi();
 
