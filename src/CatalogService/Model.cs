@@ -8,17 +8,15 @@ public record Catalog(int FirstId, int NextId, bool IsLastPage, IEnumerable<Cata
 public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbContext(options)
 {
     // https://learn.microsoft.com/ef/core/performance/advanced-performance-topics#compiled-queries
-    private static class Queries
-    {
-        public static readonly Func<CatalogDbContext, int?, int?, int?, int, IAsyncEnumerable<CatalogItem>> GetCatalogItemsQuery = 
-            EF.CompileAsyncQuery((CatalogDbContext context, int? catalogBrandId, int? before, int? after, int pageSize) =>
-               context.CatalogItems.AsNoTracking()
-                      .OrderBy(ci => ci.Id)
-                      .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
-                      .Where(ci => before == null || ci.Id <= before)
-                      .Where(ci => after == null || ci.Id >= after)
-                      .Take(pageSize + 1));
-    }
+
+    private static readonly Func<CatalogDbContext, int?, int?, int?, int, IAsyncEnumerable<CatalogItem>> GetCatalogItemsQuery =
+        EF.CompileAsyncQuery((CatalogDbContext context, int? catalogBrandId, int? before, int? after, int pageSize) =>
+           context.CatalogItems.AsNoTracking()
+                  .OrderBy(ci => ci.Id)
+                  .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
+                  .Where(ci => before == null || ci.Id <= before)
+                  .Where(ci => after == null || ci.Id >= after)
+                  .Take(pageSize + 1));
 
     public Task<List<CatalogItem>> GetCatalogItemsAsync(int? catalogBrandId, int? before, int? after, int pageSize)
     {
@@ -36,7 +34,7 @@ public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbCo
 
     public Task<List<CatalogItem>> GetCatalogItemsCompiledAsync(int? catalogBrandId, int? before, int? after, int pageSize)
     {
-        return ToListAsync(Queries.GetCatalogItemsQuery(this, catalogBrandId, before, after, pageSize));
+        return ToListAsync(GetCatalogItemsQuery(this, catalogBrandId, before, after, pageSize));
     }
 
     public DbSet<CatalogItem> CatalogItems => Set<CatalogItem>();
