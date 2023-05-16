@@ -9,51 +9,29 @@ namespace CatalogService.Controllers;
 [Route("api/v1/[controller]")]
 public class CatalogController(CatalogDbContext catalogContext, IHostEnvironment environment) : Controller
 {
-    private static readonly Func<CatalogDbContext, int?, Task<long>> GetTotalCatalogItemsQuery =
-        EF.CompileAsyncQuery((CatalogDbContext context, int? catalogBrandId) =>
-            context.CatalogItems
-                .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
-                .LongCount());
-
-    private static readonly Func<CatalogDbContext, int?, int, int, IAsyncEnumerable<CatalogItem>> GetCatalogItemsQuery =
-        EF.CompileAsyncQuery((CatalogDbContext context, int? catalogBrandId, int pageSize, int pageIndex) =>
-           context.CatalogItems//.AsNoTracking()
-                  //.OrderBy(ci => ci.Id)
-                  .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
-                  .Skip(pageSize * pageIndex)
-                  .Take(pageSize));
-
-    private static async Task<List<T>> ToListAsync<T>(IAsyncEnumerable<T> asyncEnumerable)
-    {
-        var results = new List<T>();
-        await foreach (var value in asyncEnumerable)
-        {
-            results.Add(value);
-        }
-
-        return results;
-    }
-
     [HttpGet]
     [Route("items/type/all/brand/{catalogBrandId?}")]
     [ProducesResponseType(typeof(Catalog), StatusCodes.Status200OK)]
     public async Task<ActionResult<Catalog>> ItemsByBrandIdAsync(int? catalogBrandId, [FromQuery] int pageSize = 8, [FromQuery] int pageIndex = 0)
     //public async Task<ActionResult<Catalog>> ItemsByBrandIdAsync(int? catalogBrandId, [FromQuery] int? before, [FromQuery] int? after, [FromQuery] int pageSize = 8)
     {
-        IQueryable<CatalogItem> root = catalogContext.CatalogItems;//.AsNoTracking();
+        //IQueryable<CatalogItem> root = catalogContext.CatalogItems;//.AsNoTracking();
 
-        if (catalogBrandId.HasValue)
-        {
-            root = root.Where(ci => ci.CatalogBrandId == catalogBrandId);
-        }
+        //if (catalogBrandId.HasValue)
+        //{
+        //    root = root.Where(ci => ci.CatalogBrandId == catalogBrandId);
+        //}
 
-        var totalItems = await root
-            .LongCountAsync();
+        //var totalItems = await root
+        //    .LongCountAsync();
 
-        var itemsOnPage = await root
-            .Skip(pageSize * pageIndex)
-            .Take(pageSize)
-            .ToListAsync();
+        //var itemsOnPage = await root
+        //    .Skip(pageSize * pageIndex)
+        //    .Take(pageSize)
+        //    .ToListAsync();
+
+        var itemsOnPage = await catalogContext.GetCatalogItemsAsync(catalogBrandId, pageIndex, pageSize);
+        var totalItems = await catalogContext.GetCatalogItemsCountAsync(catalogBrandId);
 
         //var totalItems = await GetTotalCatalogItemsQuery(catalogContext, catalogBrandId);
         //var itemsOnPage = await ToListAsync(GetCatalogItemsQuery(catalogContext, catalogBrandId, pageSize, pageIndex));
@@ -68,6 +46,7 @@ public class CatalogController(CatalogDbContext catalogContext, IHostEnvironment
         //    .Where(ci => after == null || ci.Id >= after)
         //    .Take(pageSize + 1)
         //    .ToListAsync();
+        //var itemsOnPage = await catalogContext.GetCatalogItemsKeySetPagingAsync(catalogBrandId, before, after, pageSize);
 
         //var (firstId, nextId) = itemsOnPage switch
         //{
@@ -76,7 +55,7 @@ public class CatalogController(CatalogDbContext catalogContext, IHostEnvironment
         //    [var first, .., var last] => (first.Id, last.Id)
         //};
 
-        //return new Catalog(firstId, nextId, itemsOnPage.Count < pageSize, itemsOnPage.Take(pageSize));
+        //return new CatalogKeySet(firstId, nextId, itemsOnPage.Count < pageSize, itemsOnPage.Take(pageSize));
     }
 
     [HttpGet]

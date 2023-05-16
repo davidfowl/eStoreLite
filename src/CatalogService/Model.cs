@@ -5,10 +5,81 @@ namespace CatalogService;
 
 public record Catalog(int PageIndex, int PageSize, long Count, List<CatalogItem> Data);
 
-//public record Catalog(int FirstId, int NextId, bool IsLastPage, IEnumerable<CatalogItem> Data);
+public record CatalogKeySet(int FirstId, int NextId, bool IsLastPage, IEnumerable<CatalogItem> Data);
 
 public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbContext(options)
 {
+    private static readonly Func<CatalogDbContext, int?, Task<long>> GetCatalogItemsCountQuery =
+    EF.CompileAsyncQuery((CatalogDbContext context, int? catalogBrandId) =>
+        context.CatalogItems
+            .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
+            .LongCount());
+
+    private static readonly Func<CatalogDbContext, int?, int, int, IAsyncEnumerable<CatalogItem>> GetCatalogItemsQuery =
+        EF.CompileAsyncQuery((CatalogDbContext context, int? catalogBrandId, int pageIndex, int pageSize) =>
+           context.CatalogItems.AsNoTracking()
+                  .OrderBy(ci => ci.Id)
+                  .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
+                  .Skip(pageSize * pageIndex)
+                  .Take(pageSize));
+
+    private static readonly Func<CatalogDbContext, int?, int?, int?, int, IAsyncEnumerable<CatalogItem>> GetCatalogItemsKeySetPagingQuery =
+    EF.CompileAsyncQuery((CatalogDbContext context, int? catalogBrandId, int? before, int? after, int pageSize) =>
+       context.CatalogItems.AsNoTracking()
+              .OrderBy(ci => ci.Id)
+              .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
+              .Where(ci => before == null || ci.Id <= before)
+              .Where(ci => after == null || ci.Id >= after)
+              .Take(pageSize + 1));
+
+    public Task<long> GetCatalogItemsCountAsync(int? catalogBrandId)
+    {
+        return CatalogItems.AsNoTracking()
+            .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
+            .LongCountAsync();
+    }
+
+    public Task<List<CatalogItem>> GetCatalogItemsAsync(int? catalogBrandId, int pageIndex, int pageSize)
+    {
+        // https://learn.microsoft.com/ef/core/performance/efficient-querying#tracking-no-tracking-and-identity-resolution
+
+        return CatalogItems.AsNoTracking()
+                    .OrderBy(ci => ci.Id)
+                    .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
+                    .Skip(pageSize * pageIndex)
+                    .Take(pageSize)
+                    .ToListAsync();
+    }
+
+    public Task<List<CatalogItem>> GetCatalogItemsKeySetPagingAsync(int? catalogBrandId, int? before, int? after, int pageSize)
+    {
+        // https://learn.microsoft.com/ef/core/performance/efficient-querying#tracking-no-tracking-and-identity-resolution
+
+        return CatalogItems.AsNoTracking()
+                    .OrderBy(ci => ci.Id)
+                    .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
+                    // https://learn.microsoft.com/ef/core/querying/pagination#keyset-pagination
+                    .Where(ci => before == null || ci.Id <= before)
+                    .Where(ci => after == null || ci.Id >= after)
+                    .Take(pageSize + 1)
+                    .ToListAsync();
+    }
+
+    public Task<long> GetCatalogItemsCountCompiledAsync(int? catalogBrandId)
+    {
+        return GetCatalogItemsCountQuery(this, catalogBrandId);
+    }
+
+    public Task<List<CatalogItem>> GetCatalogItemsCompiledAsync(int? catalogBrandId, int pageIndex, int pageSize)
+    {
+        return ToListAsync(GetCatalogItemsQuery(this, catalogBrandId, pageIndex, pageSize));
+    }
+
+    public Task<List<CatalogItem>> GetCatalogItemsKeySetPagingCompiledAsync(int? catalogBrandId, int? before, int? after, int pageSize)
+    {
+        return ToListAsync(GetCatalogItemsKeySetPagingQuery(this, catalogBrandId, before, after, pageSize));
+    }
+
     public DbSet<CatalogItem> CatalogItems => Set<CatalogItem>();
     public DbSet<CatalogBrand> CatalogBrands => Set<CatalogBrand>();
     public DbSet<CatalogType> CatalogTypes => Set<CatalogType>();
@@ -78,6 +149,17 @@ public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbCo
         builder.Property(cb => cb.Brand)
             .IsRequired()
             .HasMaxLength(100);
+    }
+
+    private static async Task<List<T>> ToListAsync<T>(IAsyncEnumerable<T> asyncEnumerable)
+    {
+        var results = new List<T>();
+        await foreach (var value in asyncEnumerable)
+        {
+            results.Add(value);
+        }
+
+        return results;
     }
 }
 

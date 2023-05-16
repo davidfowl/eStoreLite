@@ -9,11 +9,12 @@ builder.Services.AddDbContext<CatalogDbContext>(options =>
         throw new InvalidDataException("Missing connection string CatalogDb");
 
     options.UseNpgsql(connectionString);
-    //options.EnableThreadSafetyChecks(enableChecks: false);
-    //options.UseModel(CatalogDbContextModel.Instance);
+    options.EnableThreadSafetyChecks(enableChecks: false);
+    options.UseModel(CatalogDbContextModel.Instance);
 });
 
-builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+//builder.Services.AddControllers();
 
 builder.Services.AddSwaggerGen();
 
@@ -25,7 +26,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapControllers();
+app.MapCatalogApi();
+
+//app.MapControllers();
 
 await app.Services.InitializeDatabaseAsync();
 
