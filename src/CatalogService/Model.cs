@@ -54,7 +54,7 @@ public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbCo
             AND ({afterParameter} IS NULL OR c."Id" >= {afterParameter})
             ORDER BY c."Id"
             LIMIT {pageSize + 1}
-            """;
+         """;
 
         return CatalogItems.FromSql(sql).ToListAsync();
     }
