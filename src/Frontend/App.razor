@@ -1,4 +1,5 @@
-﻿@inject CatalogService CatalogService
+﻿@using Frontend.Components
+@inject CatalogService CatalogService
 
 <html>
 <head>
@@ -8,7 +9,9 @@
           integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
 </head>
 <body>
-    <h2 class="text-align-center">Product Catalog</h2>
+    <header class="d-flex align-items-center justify-content-center">
+        <h2 class="text-align-center">Product Catalog</h2>
+    </header>
 
     <div class="container">
         @if (catalog is { Data: var data })
@@ -56,6 +59,8 @@
             <p>Loading...</p>
         }
     </div>
+
+    <AppFooter />
 </body>
 </html>
 
