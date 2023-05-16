@@ -268,3 +268,10 @@ html {
         cursor: pointer;
         filter: opacity(.7);
     }
+
+.app-name {
+    font-weight: bolder;
+    font-size: 1.5rem;
+    font-family: monospace;
+    color: var(--dotnet-purple-color);
+}

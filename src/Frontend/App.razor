@@ -10,6 +10,7 @@
 </head>
 <body>
     <header class="d-flex align-items-center justify-content-center">
+        <h2 class="app-name pa-4">&lt;eShopLite /&gt;</h2>
         <div class="flex-spacer"></div>
         <h2 class="text-align-center">Product Catalog</h2>
         <div class="flex-spacer"></div>
@@ -34,8 +35,7 @@
                                 <div class="d-flex justify-space-evenly align-items-center">
                                     <p class="item-price pointer-events-none">@item.Price.ToString("C")</p>
                                     <button class="align-content-end cart-button" 
-                                        title=@($"Add {@item.Name} to cart?")
-                                        @onclick=@(() => OnAddItemToCart(item))>
+                                        title=@($"Add {@item.Name} to cart?")>
                                         <i class="fa fa-cart-plus" aria-hidden="true"></i>
                                     </button>
                                 </div>
@@ -90,13 +90,6 @@
         }
 
         paginationInfo = new PaginationInfo(catalog.FirstId, catalog.NextId, catalog.FirstId > 1, !catalog.IsLastPage);
-    }
-
-    private void OnAddItemToCart(CatalogItem item)
-    {
-        // TODO:
-        // if (item.HasAvailableQuantity)
-        itemsInCart++;
     }
 
     record PaginationInfo(int FirstId, int NextId, bool HasPreviousPage, bool HasNextPage);
