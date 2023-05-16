@@ -10,7 +10,11 @@
 </head>
 <body>
     <header class="d-flex align-items-center justify-content-center">
+        <h2 class="app-name pa-4">&lt;eShopLite /&gt;</h2>
+        <div class="flex-spacer"></div>
         <h2 class="text-align-center">Product Catalog</h2>
+        <div class="flex-spacer"></div>
+        <Cart ItemsInCart="@itemsInCart" />
     </header>
 
     <div class="container">
@@ -30,7 +34,8 @@
                                 <p class="item-description pointer-events-none">@item.Description</p>
                                 <div class="d-flex justify-space-evenly align-items-center">
                                     <p class="item-price pointer-events-none">@item.Price.ToString("C")</p>
-                                    <button class="align-content-end cart-button" title=@($"Add {@item.Name} to cart?")>
+                                    <button class="align-content-end cart-button" 
+                                        title=@($"Add {@item.Name} to cart?")>
                                         <i class="fa fa-cart-plus" aria-hidden="true"></i>
                                     </button>
                                 </div>
@@ -65,6 +70,7 @@
 </html>
 
 @code {
+    int itemsInCart = 0;
     Catalog? catalog;
     PaginationInfo paginationInfo = new(FirstId: 0, NextId: 0, HasPreviousPage: false, HasNextPage: false);
 

@@ -4,9 +4,10 @@
     --border-color-hover: #aaa;
     --text-color: #555;
     --text-heading-color: #222;
-    --dotnet-purple-color: #512bd4;
     --quick-quarter-second-transition: all ease-in-out .25s;
     --smooth-one-second-transition: all ease-in-out 1s;
+    --dotnet-purple-color: #512bd4;
+    --dotnet-purple-color-hover: #512bd4;
 }
 
 html {
@@ -21,6 +22,10 @@ html {
 
 .d-flex {
     display: flex;
+}
+
+.flex-spacer {
+    flex-grow: 1;
 }
 
 .pa-4 {
@@ -62,6 +67,10 @@ html {
 
 .justify-content-center {
     justify-content: center;
+}
+
+.justify-content-end {
+    justify-content: flex-end;
 }
 
 .align-items-center {
@@ -228,3 +237,41 @@ html {
         border-color: var(--border-color-hover);
         background-color: #ccc;
     }
+
+.fa.fa-stack-1x.badge {
+    color: white;
+    background-color: var(--dotnet-purple-color);
+    border-radius: 50%;
+    font-family: system-ui;
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 1rem;
+    top: 15%;
+    right: 15%;
+    left: initial;
+    line-height: 1.5rem;
+    border: 2px solid white;
+}
+
+.fa-shopping-cart.fa-stack-4x {
+    font-size: 4rem;
+}
+
+.fa-stack.fa-lg.cart-stack {
+    line-height: 4rem;
+    width: 4rem;
+    height: 4rem;
+    transition: var(--quick-quarter-second-transition);
+}
+
+    .fa-stack.fa-lg.cart-stack:hover {
+        cursor: pointer;
+        filter: opacity(.7);
+    }
+
+.app-name {
+    font-weight: bolder;
+    font-size: 1.5rem;
+    font-family: monospace;
+    color: var(--dotnet-purple-color);
+}
