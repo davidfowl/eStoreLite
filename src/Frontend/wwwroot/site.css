@@ -27,20 +27,6 @@ html {
     padding: 1.2rem;
 }
 
-.badge:after {
-    content: attr(value);
-    font-size: 12px;
-    color: #fff;
-    font-family: system-ui;
-    background: var(--dotnet-purple-color);
-    border-radius: 50%;
-    padding: .1rem .4rem;
-    position: relative;
-    left: -1.5rem;
-    top: -1rem;
-    opacity: 0.9;
-}
-
 .animated-underline {
     color: var(--text-color);
     text-decoration: none;
