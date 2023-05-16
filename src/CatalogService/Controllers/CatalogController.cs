@@ -11,7 +11,7 @@ public class CatalogController(CatalogDbContext catalogContext, IHostEnvironment
     [HttpGet]
     [Route("items/type/all/brand/{catalogBrandId?}")]
     [ProducesResponseType(typeof(Catalog), StatusCodes.Status200OK)]
-    public async Task<ActionResult<Catalog>> ItemsByBrandIdAsync(int? catalogBrandId, [FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 0)
+    public async Task<ActionResult<Catalog>> ItemsByBrandIdAsync(int? catalogBrandId, [FromQuery] int pageSize = 8, [FromQuery] int pageIndex = 0)
     {
         IQueryable<CatalogItem> root = catalogContext.CatalogItems;
 
