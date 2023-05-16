@@ -168,7 +168,7 @@ html {
 .cart-button:not(:disabled) {
     font-size: 1.5rem;
     cursor: pointer;
-    border: 1px solid transparent;
+    border: 2px solid transparent;
     border-radius: 4rem;
     padding: .4rem .8rem;
     background-color: transparent;
@@ -176,7 +176,7 @@ html {
 }
 
     .cart-button:not(:disabled):hover {
-        color: pink;
+        color: var(--dotnet-purple-color);
         border-color: var(--border-color-hover);
-        background-color: black;
+        background-color: #ccc;
     }
