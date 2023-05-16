@@ -10,7 +10,7 @@ public static class CatalogApi
 
         group.MapGet("items/type/all/brand/{catalogBrandId?}", async (int? catalogBrandId, CatalogDbContext catalogContext, int? before, int? after, int pageSize = 10) =>
         {
-            var itemsOnPage = await catalogContext.GetCatalogItemsAsync(catalogBrandId, before, after, pageSize);
+            var itemsOnPage = await catalogContext.GetCatalogItemsCompiledAsync(catalogBrandId, before, after, pageSize);
 
             var (firstId, nextId) = itemsOnPage switch
             {
