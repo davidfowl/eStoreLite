@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// https://learn.microsoft.com/ef/core/performance/advanced-performance-topics#dbcontext-pooling
 builder.Services.AddDbContextPool<CatalogDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("CatalogDb") ??
