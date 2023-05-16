@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Npgsql;
 
 namespace CatalogService;
 
@@ -38,26 +37,6 @@ public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbCo
     public Task<List<CatalogItem>> GetCatalogItemsCompiledAsync(int? catalogBrandId, int? before, int? after, int pageSize)
     {
         return ToListAsync(Queries.GetCatalogItemsQuery(this, catalogBrandId, before, after, pageSize));
-    }
-
-    // https://learn.microsoft.com/ef/core/querying/sql-queries
-    public Task<List<CatalogItem>> GetCatalogItemsSqlAsync(int? catalogBrandId, int? before, int? after, int pageSize)
-    {
-        var catalogBrandIdParameter = new NpgsqlParameter<int?>(nameof(catalogBrandId), catalogBrandId);
-        var beforeParameter = new NpgsqlParameter<int?>(nameof(before), before);
-        var afterParameter = new NpgsqlParameter<int?>(nameof(after), after);
-
-        FormattableString sql = $"""
-            SELECT *
-            FROM "Catalog" AS c
-            WHERE ({catalogBrandIdParameter} IS NULL OR c."CatalogBrandId" = {catalogBrandIdParameter})
-            AND ({beforeParameter} IS NULL OR c."Id" <= {beforeParameter})
-            AND ({afterParameter} IS NULL OR c."Id" >= {afterParameter})
-            ORDER BY c."Id"
-            LIMIT {pageSize + 1}
-        """;
-
-        return CatalogItems.FromSql(sql).ToListAsync();
     }
 
     public DbSet<CatalogItem> CatalogItems => Set<CatalogItem>();
