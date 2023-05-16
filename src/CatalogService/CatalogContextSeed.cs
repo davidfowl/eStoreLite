@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Npgsql;
 
 namespace CatalogService;
 
@@ -6,14 +6,16 @@ internal static class CatalogContextSeed
 {
     public static async Task InitializeDatabaseAsync(this IServiceProvider serviceProvider)
     {
-        using var scope = serviceProvider.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
-        await dbContext.Database.MigrateAsync();
+        var env = serviceProvider.GetRequiredService<IHostEnvironment>();
+        var dataSource = serviceProvider.GetRequiredService<NpgsqlDataSource>();
 
-        await SeedAsync(dbContext);
+        var sql = File.ReadAllText(Path.Combine(env.ContentRootPath, "Schema.sql"));
+        await dataSource.ExecuteAsync(sql);
+
+        await SeedAsync(dataSource);
     }
 
-    private static async Task SeedAsync(CatalogDbContext context)
+    private static async Task SeedAsync(NpgsqlDataSource dataSource)
     {
         static List<CatalogBrand> GetPreconfiguredCatalogBrands()
         {
@@ -57,25 +59,41 @@ internal static class CatalogContextSeed
             };
         }
 
-        if (!context.CatalogBrands.Any())
+        foreach (var brand in GetPreconfiguredCatalogBrands())
         {
-            await context.CatalogBrands.AddRangeAsync(GetPreconfiguredCatalogBrands());
-
-            await context.SaveChangesAsync();
+            await dataSource.ExecuteAsync("""
+                INSERT INTO CatalogBrands (Id, Brand)
+                VALUES (@Id, @Brand)
+            """, 
+            brand.Id.AsTypedDbParameter(), brand.Brand.AsTypedDbParameter());
         }
 
-        if (!context.CatalogTypes.Any())
+        foreach (var type in GetPreconfiguredCatalogTypes())
         {
-            await context.CatalogTypes.AddRangeAsync(GetPreconfiguredCatalogTypes());
-
-            await context.SaveChangesAsync();
+            await dataSource.ExecuteAsync("""
+                INSERT INTO CatalogTypes (Id, Type)
+                VALUES (@Id, @Type)
+             """, 
+             type.Id.AsTypedDbParameter(), type.Type.AsTypedDbParameter());
         }
 
-        if (!context.CatalogItems.Any())
+        foreach (var item in GetPreconfiguredItems())
         {
-            await context.CatalogItems.AddRangeAsync(GetPreconfiguredItems());
-
-            await context.SaveChangesAsync();
+            await dataSource.ExecuteAsync("""
+                INSERT INTO CatalogItems (Id, Name, Description, Price, PictureFileName, AvailableStock, RestockThreshold, MaxStockThreshold, OnReorder, CatalogTypeId, CatalogBrandId)
+                               VALUES (@Id, @Name, @Description, @Price, @PictureFileName, @AvailableStock, @RestockThreshold, @MaxStockThreshold, @OnReorder, @CatalogTypeId, @CatalogBrandId)
+                """,
+                item.Id.AsTypedDbParameter(),
+                item.Name.AsTypedDbParameter(),
+                item.Description.AsTypedDbParameter(),
+                item.Price.AsTypedDbParameter(),
+                item.PictureFileName.AsTypedDbParameter(),
+                item.AvailableStock.AsTypedDbParameter(),
+                item.RestockThreshold.AsTypedDbParameter(),
+                item.MaxStockThreshold.AsTypedDbParameter(),
+                item.OnReorder.AsTypedDbParameter(),
+                item.CatalogTypeId.AsTypedDbParameter(),
+                item.CatalogBrandId.AsTypedDbParameter());
         }
     }
 }

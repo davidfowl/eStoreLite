@@ -1,147 +1,50 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Nanorm.Npgsql;
 using Npgsql;
+using Systems.Collections.Generic;
 
 namespace CatalogService;
 
-public record Catalog(int FirstId, int NextId, bool IsLastPage, IEnumerable<CatalogItem> Data);
-
-public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbContext(options)
+public static class Queries
 {
-    // https://learn.microsoft.com/ef/core/performance/advanced-performance-topics#compiled-queries
-    private static class Queries
+    public static Task<List<CatalogItem>> GetCatalogItemsAsync(this NpgsqlDataSource dataSource,
+        int? catalogBrandId,
+        int? before,
+        int? after,
+        int pageSize)
     {
-        public static readonly Func<CatalogDbContext, int?, int?, int?, int, IAsyncEnumerable<CatalogItem>> GetCatalogItemsQuery = 
-            EF.CompileAsyncQuery((CatalogDbContext context, int? catalogBrandId, int? before, int? after, int pageSize) =>
-               context.CatalogItems.AsNoTracking()
-                      .OrderBy(ci => ci.Id)
-                      .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
-                      .Where(ci => before == null || ci.Id <= before)
-                      .Where(ci => after == null || ci.Id >= after)
-                      .Take(pageSize + 1));
-    }
-
-    public Task<List<CatalogItem>> GetCatalogItemsAsync(int? catalogBrandId, int? before, int? after, int pageSize)
-    {
-        // https://learn.microsoft.com/ef/core/performance/efficient-querying#tracking-no-tracking-and-identity-resolution
-
-        return CatalogItems.AsNoTracking()
-                    .OrderBy(ci => ci.Id)
-                    .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
-                    // https://learn.microsoft.com/ef/core/querying/pagination#keyset-pagination
-                    .Where(ci => before == null || ci.Id <= before)
-                    .Where(ci => after == null || ci.Id >= after)
-                    .Take(pageSize + 1)
-                    .ToListAsync();
-    }
-
-    public Task<List<CatalogItem>> GetCatalogItemsCompiledAsync(int? catalogBrandId, int? before, int? after, int pageSize)
-    {
-        return ToListAsync(Queries.GetCatalogItemsQuery(this, catalogBrandId, before, after, pageSize));
-    }
-
-    // https://learn.microsoft.com/ef/core/querying/sql-queries
-    public Task<List<CatalogItem>> GetCatalogItemsSqlAsync(int? catalogBrandId, int? before, int? after, int pageSize)
-    {
-        var catalogBrandIdParameter = new NpgsqlParameter<int?>(nameof(catalogBrandId), catalogBrandId);
-        var beforeParameter = new NpgsqlParameter<int?>(nameof(before), before);
-        var afterParameter = new NpgsqlParameter<int?>(nameof(after), after);
-
-        FormattableString sql = $"""
+        const string sql =
+        """
             SELECT *
             FROM "Catalog" AS c
-            WHERE ({catalogBrandIdParameter} IS NULL OR c."CatalogBrandId" = {catalogBrandIdParameter})
-            AND ({beforeParameter} IS NULL OR c."Id" <= {beforeParameter})
-            AND ({afterParameter} IS NULL OR c."Id" >= {afterParameter})
+            WHERE ($1 = -1 OR c."CatalogBrandId" = $1)
+            AND ($2 = -1 OR c."Id" <= $2)
+            AND ($3 = -1 OR c."Id" >= $3)
             ORDER BY c."Id"
-            LIMIT {pageSize + 1}
+            LIMIT $4
         """;
 
-        return CatalogItems.FromSql(sql).ToListAsync();
+        return dataSource.QueryAsync<CatalogItem>(sql,
+            (catalogBrandId ?? -1).AsTypedDbParameter(),
+            (before ?? -1).AsTypedDbParameter(),
+            (after ?? -1).AsTypedDbParameter(),
+            (pageSize + 1).AsTypedDbParameter())
+            .ToListAsync();
     }
 
-    public DbSet<CatalogItem> CatalogItems => Set<CatalogItem>();
-    public DbSet<CatalogBrand> CatalogBrands => Set<CatalogBrand>();
-    public DbSet<CatalogType> CatalogTypes => Set<CatalogType>();
-
-    protected override void OnModelCreating(ModelBuilder builder)
+    public static Task<CatalogItem?> GetCatalogItemAsync(this NpgsqlDataSource dataSource, int catalogItemId)
     {
-        DefineCatalogBrand(builder.Entity<CatalogBrand>());
+        const string sql =
+        """
+            SELECT *
+            FROM "Catalog" AS c
+            WHERE c."Id" = $1
+        """;
 
-        DefineCatalogItem(builder.Entity<CatalogItem>());
-
-        DefineCatalogType(builder.Entity<CatalogType>());
-    }
-
-    private void DefineCatalogType(EntityTypeBuilder<CatalogType> builder)
-    {
-        builder.ToTable("CatalogType");
-
-        builder.HasKey(ci => ci.Id);
-
-        builder.Property(ci => ci.Id)
-            .UseHiLo("catalog_type_hilo")
-            .IsRequired();
-
-        builder.Property(cb => cb.Type)
-            .IsRequired()
-            .HasMaxLength(100);
-    }
-
-    private static void DefineCatalogItem(EntityTypeBuilder<CatalogItem> builder)
-    {
-        builder.ToTable("Catalog");
-
-        builder.Property(ci => ci.Id)
-                    .UseHiLo("catalog_hilo")
-                    .IsRequired();
-
-        builder.Property(ci => ci.Name)
-            .IsRequired(true)
-            .HasMaxLength(50);
-
-        builder.Property(ci => ci.Price)
-            .IsRequired(true);
-
-        builder.Property(ci => ci.PictureFileName)
-            .IsRequired(false);
-
-        builder.Ignore(ci => ci.PictureUri);
-
-        builder.HasOne(ci => ci.CatalogBrand)
-            .WithMany()
-            .HasForeignKey(ci => ci.CatalogBrandId);
-
-        builder.HasOne(ci => ci.CatalogType)
-            .WithMany()
-            .HasForeignKey(ci => ci.CatalogTypeId);
-    }
-
-    private static void DefineCatalogBrand(EntityTypeBuilder<CatalogBrand> builder)
-    {
-        builder.ToTable("CatalogBrand");
-        builder.HasKey(ci => ci.Id);
-
-        builder.Property(ci => ci.Id)
-            .UseHiLo("catalog_brand_hilo")
-            .IsRequired();
-
-        builder.Property(cb => cb.Brand)
-            .IsRequired()
-            .HasMaxLength(100);
-    }
-
-    private static async Task<List<T>> ToListAsync<T>(IAsyncEnumerable<T> asyncEnumerable)
-    {
-        var results = new List<T>();
-        await foreach (var value in asyncEnumerable)
-        {
-            results.Add(value);
-        }
-
-        return results;
+        return dataSource.QuerySingleAsync<CatalogItem>(sql, catalogItemId.AsTypedDbParameter());
     }
 }
+
+public record Catalog(int FirstId, int NextId, bool IsLastPage, IEnumerable<CatalogItem> Data);
 
 public class CatalogType
 {
@@ -155,14 +58,13 @@ public class CatalogBrand
     public string Brand { get; set; } = default!;
 }
 
-public class CatalogItem
+public class CatalogItem : IDataReaderMapper<CatalogItem>
 {
     public int Id { get; set; }
     public string Name { get; set; } = default!;
     public string? Description { get; set; }
     public decimal Price { get; set; }
     public string PictureFileName { get; set; } = default!;
-    public string? PictureUri { get; set; }
 
     public int CatalogTypeId { get; set; }
     public CatalogType CatalogType { get; set; } = default!;
@@ -173,4 +75,22 @@ public class CatalogItem
     public int RestockThreshold { get; set; }
     public int MaxStockThreshold { get; set; }
     public bool OnReorder { get; set; }
+
+    public static CatalogItem Map(NpgsqlDataReader dataReader)
+    {
+        return new()
+        {
+            Id = dataReader.GetInt32(dataReader.GetOrdinal(nameof(Id))),
+            Name = dataReader.GetString(dataReader.GetOrdinal(nameof(Name))),
+            Description = dataReader.GetString(dataReader.GetOrdinal(nameof(Description))),
+            Price = dataReader.GetDecimal(dataReader.GetOrdinal(nameof(Price))),
+            PictureFileName = dataReader.GetString(dataReader.GetOrdinal(nameof(PictureFileName))),
+            CatalogTypeId = dataReader.GetInt32(dataReader.GetOrdinal(nameof(CatalogTypeId))),
+            CatalogBrandId = dataReader.GetInt32(dataReader.GetOrdinal(nameof(CatalogBrandId))),
+            AvailableStock = dataReader.GetInt32(dataReader.GetOrdinal(nameof(AvailableStock))),
+            RestockThreshold = dataReader.GetInt32(dataReader.GetOrdinal(nameof(RestockThreshold))),
+            MaxStockThreshold = dataReader.GetInt32(dataReader.GetOrdinal(nameof(MaxStockThreshold))),
+            OnReorder = dataReader.GetBoolean(dataReader.GetOrdinal(nameof(OnReorder))),
+        };
+    }
 }

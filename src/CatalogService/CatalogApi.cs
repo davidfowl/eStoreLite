@@ -1,4 +1,6 @@
-﻿namespace CatalogService;
+﻿using Npgsql;
+
+namespace CatalogService;
 
 public static class CatalogApi
 {
@@ -8,9 +10,9 @@ public static class CatalogApi
 
         group.WithTags("Catalog");
 
-        group.MapGet("items/type/all/brand/{catalogBrandId?}", async (int? catalogBrandId, CatalogDbContext catalogContext, int? before, int? after, int pageSize = 8) =>
+        group.MapGet("items/type/all/brand/{catalogBrandId?}", async (int? catalogBrandId, NpgsqlDataSource dataSource, int? before, int? after, int pageSize = 8) =>
         {
-            var itemsOnPage = await catalogContext.GetCatalogItemsCompiledAsync(catalogBrandId, before, after, pageSize);
+            var itemsOnPage = await dataSource.GetCatalogItemsAsync(catalogBrandId, before, after, pageSize);
 
             var (firstId, nextId) = itemsOnPage switch
             {
@@ -26,9 +28,9 @@ public static class CatalogApi
                 itemsOnPage.Take(pageSize));
         });
 
-        group.MapGet("items/{catalogItemId:int}/image", async (int catalogItemId, CatalogDbContext catalogDbContext, IHostEnvironment environment) =>
+        group.MapGet("items/{catalogItemId:int}/image", async (int catalogItemId, NpgsqlDataSource dataSource, IHostEnvironment environment) =>
         {
-            var item = await catalogDbContext.CatalogItems.FindAsync(catalogItemId);
+            var item = await dataSource.GetCatalogItemAsync(catalogItemId);
 
             if (item is null)
             {

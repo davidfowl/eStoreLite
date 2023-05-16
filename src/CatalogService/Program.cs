@@ -1,5 +1,4 @@
-using CatalogService.CompiledModels;
-using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,19 +13,12 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Encoder = null;
 });
 
-builder.Services.AddDbContextPool<CatalogDbContext>(options =>
+builder.Services.AddSingleton(sp =>
 {
     var connectionString = builder.Configuration.GetConnectionString("CatalogDb") ??
         throw new InvalidDataException("Missing connection string CatalogDb");
 
-    options.UseNpgsql(connectionString)
-           // Compiled model: this improves the startup time
-           // https://learn.microsoft.com/ef/core/performance/advanced-performance-topics#compiled-models
-           .UseModel(CatalogDbContextModel.Instance);
-
-    // The need for speed, use with caution!
-    // https://learn.microsoft.com/ef/core/performance/advanced-performance-topics#reducing-runtime-overhead
-    options.EnableThreadSafetyChecks(enableChecks: false);
+    return new NpgsqlDataSourceBuilder(connectionString).Build();
 });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -42,6 +34,6 @@ if (app.Environment.IsDevelopment())
 
 app.MapCatalogApi();
 
-await app.Services.InitializeDatabaseAsync();
+// await app.Services.InitializeDatabaseAsync();
 
 app.Run();
