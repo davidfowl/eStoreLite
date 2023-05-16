@@ -10,9 +10,9 @@ public static class CatalogApi
 
         group.WithTags("Catalog");
 
-        group.MapGet("items/type/all/brand/{catalogBrandId?}", async (int? catalogBrandId, NpgsqlDataSource dataSource, int? before, int? after, int pageSize = 8) =>
+        group.MapGet("items/type/all/brand/{catalogBrandId?}", async (int? catalogBrandId, ICatalogDb db, int? before, int? after, int pageSize = 8) =>
         {
-            var itemsOnPage = await dataSource.GetCatalogItemsAsync(catalogBrandId, before, after, pageSize);
+            var itemsOnPage = await db.GetCatalogItemsAsync(catalogBrandId, before, after, pageSize);
 
             var (firstId, nextId) = itemsOnPage switch
             {
@@ -28,9 +28,9 @@ public static class CatalogApi
                 itemsOnPage.Take(pageSize));
         });
 
-        group.MapGet("items/{catalogItemId:int}/image", async (int catalogItemId, NpgsqlDataSource dataSource, IHostEnvironment environment) =>
+        group.MapGet("items/{catalogItemId:int}/image", async (int catalogItemId, ICatalogDb db, IHostEnvironment environment) =>
         {
-            var item = await dataSource.GetCatalogItemAsync(catalogItemId);
+            var item = await db.GetCatalogItemAsync(catalogItemId);
 
             if (item is null)
             {

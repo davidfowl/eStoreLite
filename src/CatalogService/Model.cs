@@ -4,13 +4,27 @@ using Systems.Collections.Generic;
 
 namespace CatalogService;
 
-public static class Queries
+public interface ICatalogDb
 {
-    public static Task<List<CatalogItem>> GetCatalogItemsAsync(this NpgsqlDataSource dataSource,
-        int? catalogBrandId,
-        int? before,
-        int? after,
-        int pageSize)
+    Task<List<CatalogItem>> GetCatalogItemsAsync(int? catalogBrandId, int? before, int? after, int pageSize);
+    Task<CatalogItem?> GetCatalogItemAsync(int catalogItemId);
+}
+
+public class CatalogDb(NpgsqlDataSource dataSource) : ICatalogDb
+{
+    public Task<CatalogItem?> GetCatalogItemAsync(int catalogItemId)
+    {
+        const string sql =
+        """
+            SELECT *
+            FROM "Catalog" AS c
+            WHERE c."Id" = $1
+        """;
+
+        return dataSource.QuerySingleAsync<CatalogItem>(sql, catalogItemId.AsTypedDbParameter());
+    }
+
+    public Task<List<CatalogItem>> GetCatalogItemsAsync(int? catalogBrandId, int? before, int? after, int pageSize)
     {
         const string sql =
         """
@@ -29,18 +43,6 @@ public static class Queries
             (after ?? -1).AsTypedDbParameter(),
             (pageSize + 1).AsTypedDbParameter())
             .ToListAsync();
-    }
-
-    public static Task<CatalogItem?> GetCatalogItemAsync(this NpgsqlDataSource dataSource, int catalogItemId)
-    {
-        const string sql =
-        """
-            SELECT *
-            FROM "Catalog" AS c
-            WHERE c."Id" = $1
-        """;
-
-        return dataSource.QuerySingleAsync<CatalogItem>(sql, catalogItemId.AsTypedDbParameter());
     }
 }
 

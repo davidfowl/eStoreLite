@@ -13,13 +13,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Encoder = null;
 });
 
-builder.Services.AddSingleton(sp =>
-{
-    var connectionString = builder.Configuration.GetConnectionString("CatalogDb") ??
-        throw new InvalidDataException("Missing connection string CatalogDb");
-
-    return new NpgsqlDataSourceBuilder(connectionString).Build();
-});
+builder.Services.AddCatalogDb(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
