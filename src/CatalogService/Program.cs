@@ -1,3 +1,4 @@
+using CatalogService.CompiledModels;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,8 @@ builder.Services.AddDbContext<CatalogDbContext>(options =>
         throw new InvalidDataException("Missing connection string CatalogDb");
 
     options.UseNpgsql(connectionString);
+    //options.EnableThreadSafetyChecks(enableChecks: false);
+    //options.UseModel(CatalogDbContextModel.Instance);
 });
 
 builder.Services.AddControllers();

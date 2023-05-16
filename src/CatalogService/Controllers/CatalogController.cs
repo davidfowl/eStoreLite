@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Metrics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,12 +9,38 @@ namespace CatalogService.Controllers;
 [Route("api/v1/[controller]")]
 public class CatalogController(CatalogDbContext catalogContext, IHostEnvironment environment) : Controller
 {
+    private static readonly Func<CatalogDbContext, int?, Task<long>> GetTotalCatalogItemsQuery =
+        EF.CompileAsyncQuery((CatalogDbContext context, int? catalogBrandId) =>
+            context.CatalogItems
+                .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
+                .LongCount());
+
+    private static readonly Func<CatalogDbContext, int?, int, int, IAsyncEnumerable<CatalogItem>> GetCatalogItemsQuery =
+        EF.CompileAsyncQuery((CatalogDbContext context, int? catalogBrandId, int pageSize, int pageIndex) =>
+           context.CatalogItems//.AsNoTracking()
+                  //.OrderBy(ci => ci.Id)
+                  .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
+                  .Skip(pageSize * pageIndex)
+                  .Take(pageSize));
+
+    private static async Task<List<T>> ToListAsync<T>(IAsyncEnumerable<T> asyncEnumerable)
+    {
+        var results = new List<T>();
+        await foreach (var value in asyncEnumerable)
+        {
+            results.Add(value);
+        }
+
+        return results;
+    }
+
     [HttpGet]
     [Route("items/type/all/brand/{catalogBrandId?}")]
     [ProducesResponseType(typeof(Catalog), StatusCodes.Status200OK)]
     public async Task<ActionResult<Catalog>> ItemsByBrandIdAsync(int? catalogBrandId, [FromQuery] int pageSize = 8, [FromQuery] int pageIndex = 0)
+    //public async Task<ActionResult<Catalog>> ItemsByBrandIdAsync(int? catalogBrandId, [FromQuery] int? before, [FromQuery] int? after, [FromQuery] int pageSize = 8)
     {
-        IQueryable<CatalogItem> root = catalogContext.CatalogItems;
+        IQueryable<CatalogItem> root = catalogContext.CatalogItems;//.AsNoTracking();
 
         if (catalogBrandId.HasValue)
         {
@@ -28,7 +55,28 @@ public class CatalogController(CatalogDbContext catalogContext, IHostEnvironment
             .Take(pageSize)
             .ToListAsync();
 
+        //var totalItems = await GetTotalCatalogItemsQuery(catalogContext, catalogBrandId);
+        //var itemsOnPage = await ToListAsync(GetCatalogItemsQuery(catalogContext, catalogBrandId, pageSize, pageIndex));
+
         return new Catalog(pageIndex, pageSize, totalItems, itemsOnPage);
+
+        //var itemsOnPage = await catalogContext.CatalogItems
+        //    .OrderBy(ci => ci.Id)
+        //    .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
+        //    // https://learn.microsoft.com/ef/core/querying/pagination#keyset-pagination
+        //    .Where(ci => before == null || ci.Id <= before)
+        //    .Where(ci => after == null || ci.Id >= after)
+        //    .Take(pageSize + 1)
+        //    .ToListAsync();
+
+        //var (firstId, nextId) = itemsOnPage switch
+        //{
+        //    [] => (0, 0),
+        //    [var only] => (only.Id, only.Id),
+        //    [var first, .., var last] => (first.Id, last.Id)
+        //};
+
+        //return new Catalog(firstId, nextId, itemsOnPage.Count < pageSize, itemsOnPage.Take(pageSize));
     }
 
     [HttpGet]
