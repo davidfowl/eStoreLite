@@ -1,4 +1,5 @@
 ﻿@using Frontend.Components
+@implements IRazorComponentApplication<App>
 @inject CatalogService CatalogService
 
 <html>
@@ -64,8 +65,8 @@
             <p>Loading...</p>
         }
     </div>
-
     <AppFooter />
+    <script src="_framework/blazor.web.js" suppress-error="BL9992"></script>
 </body>
 </html>
 
