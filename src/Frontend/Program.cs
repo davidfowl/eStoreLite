@@ -20,8 +20,6 @@ app.UseStaticFiles();
 
 app.MapRazorComponents<MainLayout>();
 
-app.MapGet("/", (int? before, int? after) => new RazorComponentResult<App>(new { before, after }));
-
 app.MapForwarder("/catalog/images/{id}", catalogServiceUrl, "/api/v1/catalog/items/{id}/image");
 
 app.Run();

@@ -1,6 +1,11 @@
 ﻿@using Frontend.Components
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Web;
+@page "/"
 @layout MainLayout
+@inject FormDataProvider FormData
 @inject CatalogService CatalogService
+@inject NavigationManager Nav
 @attribute [StreamRendering(true)]
 
 @if (catalog is { Data: var data })
@@ -19,10 +24,15 @@
                         <p class="item-description pointer-events-none">@item.Description</p>
                         <div class="d-flex justify-space-evenly align-items-center">
                             <p class="item-price pointer-events-none">@item.Price.ToString("C")</p>
-                            <button class="align-content-end cart-button" 
-                                title=@($"Add {@item.Name} to cart?")>
-                                <i class="fa fa-cart-plus" aria-hidden="true"></i>
-                            </button>
+                            <EditForm FormHandlerName="@(item.Id.ToString())"
+                                      Model="@ignored"
+                                      OnValidSubmit="@(() => AddToCart(item))"
+                                      method="post">
+                                <button type="submit" class="align-content-end cart-button" 
+                                    title=@($"Add {@item.Name} to cart?")>
+                                    <i class="fa fa-cart-plus" aria-hidden="true"></i>
+                                </button>
+                            </EditForm>
                         </div>
                     </div>
                 </div>
@@ -50,18 +60,20 @@ else
 }
 
 @code {
+    object ignored = new();
+    int? before;
+    int? after;
     Catalog? catalog;
     PaginationInfo paginationInfo = new(FirstId: 0, NextId: 0, HasPreviousPage: false, HasNextPage: false);
 
-    [Parameter]
-    public int? Before { get; set; }
-
-    [Parameter]
-    public int? After { get; set; }
-
     protected override async Task OnInitializedAsync()
     {
-        catalog = await CatalogService.GetItemsAsync(Before, After);
+        // Workaround for [SupplyParameterFromQuery] not being implemented for Razor Component endpoints yet
+        var query = HttpUtility.ParseQueryString(new Uri(Nav.Uri).Query);
+        before = int.TryParse(query.Get("before"), out var beforeParsed) ? beforeParsed : null;
+        after = int.TryParse(query.Get("after"), out var afterParsed) ? afterParsed : null;
+
+        catalog = await CatalogService.GetItemsAsync(before, after);
 
         if (catalog is null)
         {
@@ -71,5 +83,21 @@ else
         paginationInfo = new PaginationInfo(catalog.FirstId, catalog.NextId, catalog.FirstId > 1, !catalog.IsLastPage);
     }
 
+    void AddToCart(CatalogItem item)
+    {
+        // To actually add it to cart, we should add some Cart model either as a scoped DI service or
+        // as a cascading parameter, so it can be consumed by both <App> and <Cart>. It would have an
+        // "Add" method that triggers some event that other components can listen to and call their
+        // own "StateHasChanged". Alternatively, render the cart from <App> via the sections feature,
+        // so it can share the same info automatically.
+        Console.WriteLine("Trying to add to cart: " + item.Name);
+
+        // Note: we can't P/R/G yet because `DispatchCapturedEvent` doesn't catch and deal with NavigationException,
+        // so the following would just fail. It's also a bit painful having to remove the "handler" param manually.
+        // That problem could go away if "handler" was a hidden POST field.
+
+        // Nav.NavigateTo(Nav.GetUriWithQueryParameter("handler", (string?)null));
+    }
+    
     record PaginationInfo(int FirstId, int NextId, bool HasPreviousPage, bool HasNextPage);
 }
