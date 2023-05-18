@@ -480,3 +480,6 @@ $RECYCLE.BIN/
 *.swp
 *.nettrace
 *.etlx
+
+# local dotnet install
+.dotnet
