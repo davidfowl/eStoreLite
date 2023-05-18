@@ -18,7 +18,7 @@ var app = builder.Build();
 
 app.UseStaticFiles();
 
-app.MapRazorComponents<App>();
+app.MapRazorComponents<MainLayout>();
 
 app.MapGet("/", (int? before, int? after) => new RazorComponentResult<App>(new { before, after }));
 
