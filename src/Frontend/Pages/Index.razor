@@ -23,6 +23,7 @@
                             <EditForm 
                                 method="post"
                                 action="@($"/{item.Id}")"
+                                Model="item"
                                 FormHandlerName="@($"AddToCart[{item.Id}]")"
                                 OnValidSubmit="AddToCart">
                                 <button type="submit" class="align-content-end cart-button" title=@($"Add {@item.Name} to cart?")>
@@ -65,7 +66,7 @@ else
     [SupplyParameterFromQuery]
     public int? After { get; set; }
 
-    [Parameter] public int? Id { get; set; }
+    [Parameter] public string? Id { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -81,12 +82,12 @@ else
 
     void AddToCart()
     {
-        if (Id == null)
+        if (Id == null || !int.TryParse(Id, out var id))
         {
             return;
         }
 
-        var item = catalog!.Data.FirstOrDefault(i => i.Id == Id);
+        var item = catalog!.Data.FirstOrDefault(i => i.Id == id);
 
         if (item == null)
         {
