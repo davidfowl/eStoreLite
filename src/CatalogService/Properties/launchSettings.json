@@ -19,6 +19,16 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
+    "http-prod": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5165",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production",
+        "CONNECTIONSTRINGS__CATALOGDB": "Server=localhost;Port=5434;Username=postgres;Database=postgres"
+      }
+    },
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
