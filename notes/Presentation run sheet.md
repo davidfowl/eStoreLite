@@ -31,7 +31,7 @@
   - Use memory/allocation profiles to see memory use before & after changes
 - Add image forwarder using MapForwarder from YARP
 
-## 00:11 4th optimization: Images endpoint
+## 00:11 3rd optimization: Images endpoint
 
 5 mins
 
@@ -39,7 +39,7 @@
 - Reduce allocations, show memory profile LOH, etc.
 - Add caching headers support by using in-box result types
 
-## 00:16 5th optimization: EF Core
+## 00:16 4th optimization: EF Core
 
 10 mins
 
@@ -55,7 +55,9 @@
 
 ## 00:26 ** Shift to startup time optimization **
 
-## 00:26 6th optimization: Removing EF Core
+- Switch to `aot` branch
+
+## 00:26 5th optimization: Removing EF Core
 
 3 mins
 
@@ -63,7 +65,7 @@
 - Removing EF Core saves allocations and processing
 - Could use Dapper (very popular) but we'll use Nanorm with a manual mapping method (as it's native AOT friendly)
 
-## 00:29 7th optimization: Move to minimal APIs
+## 00:29 6th optimization: Move to minimal APIs
 
 6 mins
 
@@ -89,7 +91,7 @@
 - Recap performance gains from original version to optimized version
 - Summarize calls to action
 
-## 00:43 Q & A if time (2 minutes buffer)
+## 00:43 Q & A on Pubble if time (2 minutes buffer)
 
 ## BONUS 1 Compare to gRPC
 
