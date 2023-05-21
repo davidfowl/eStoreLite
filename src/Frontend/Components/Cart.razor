@@ -1,0 +1,13 @@
+﻿<div class="justify-content-end">
+    <span class="fa-stack fa-lg cart-stack pa-4">
+        <i class="fa fa-shopping-cart fa-stack-4x"></i>
+        <i class="fa fa-stack-1x badge">
+            @(ItemsInCart ?? 0)
+        </i>
+    </span>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public int? ItemsInCart { get; set; }
+}
