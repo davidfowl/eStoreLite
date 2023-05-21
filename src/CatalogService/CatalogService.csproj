@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="Nanorm.Npgsql" Version="0.0.4" />
+    <PackageReference Include="Npgsql" Version="8.0.0-preview.4" />
   </ItemGroup>
 
   <ItemGroup>
