@@ -23,13 +23,13 @@ public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbCo
         // https://learn.microsoft.com/ef/core/performance/efficient-querying#tracking-no-tracking-and-identity-resolution
 
         return CatalogItems.AsNoTracking()
-                    .OrderBy(ci => ci.Id)
-                    .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
-                    // https://learn.microsoft.com/ef/core/querying/pagination#keyset-pagination
-                    .Where(ci => before == null || ci.Id <= before)
-                    .Where(ci => after == null || ci.Id >= after)
-                    .Take(pageSize + 1)
-                    .ToListAsync();
+                           .OrderBy(ci => ci.Id)
+                           .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
+                           // https://learn.microsoft.com/ef/core/querying/pagination#keyset-pagination
+                           .Where(ci => before == null || ci.Id <= before)
+                           .Where(ci => after == null || ci.Id >= after)
+                           .Take(pageSize + 1)
+                           .ToListAsync();
     }
 
     public Task<List<CatalogItem>> GetCatalogItemsCompiledAsync(int? catalogBrandId, int? before, int? after, int pageSize)
@@ -70,8 +70,8 @@ public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbCo
         builder.ToTable("Catalog");
 
         builder.Property(ci => ci.Id)
-                    .UseHiLo("catalog_hilo")
-                    .IsRequired();
+            .UseHiLo("catalog_hilo")
+            .IsRequired();
 
         builder.Property(ci => ci.Name)
             .IsRequired(true)

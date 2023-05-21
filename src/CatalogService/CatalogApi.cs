@@ -8,23 +8,9 @@ public static class CatalogApi
 
         group.WithTags("Catalog");
 
-        group.MapGet("items/type/all/brand/{catalogBrandId?}", async (int? catalogBrandId, CatalogDbContext catalogContext, int? before, int? after, int pageSize = 8) =>
-        {
-            var itemsOnPage = await catalogContext.GetCatalogItemsCompiledAsync(catalogBrandId, before, after, pageSize);
-
-            var (firstId, nextId) = itemsOnPage switch
-            {
-                [] => (0, 0),
-                [var only] => (only.Id, only.Id),
-                [var first, .., var last] => (first.Id, last.Id)
-            };
-
-            return new Catalog(
-                firstId,
-                nextId,
-                itemsOnPage.Count < pageSize,
-                itemsOnPage.Take(pageSize));
-        });
+        group.MapGet("items/type/all/brand", (CatalogDbContext catalogContext, int? before, int? after, int pageSize = 8) =>
+            GetCatalogItems(null, catalogContext, before, after, pageSize));
+        group.MapGet("items/type/all/brand/{catalogBrandId?}", GetCatalogItems);
 
         group.MapGet("items/{catalogItemId:int}/image", async (int catalogItemId, CatalogDbContext catalogDbContext, IHostEnvironment environment) =>
         {
@@ -48,5 +34,23 @@ public static class CatalogApi
         .Produces(200, contentType: "image/jpeg");
 
         return group;
+
+        async Task<Catalog> GetCatalogItems(int? catalogBrandId, CatalogDbContext catalogContext, int? before, int? after, int pageSize = 8)
+        {
+            var itemsOnPage = await catalogContext.GetCatalogItemsCompiledAsync(catalogBrandId, before, after, pageSize);
+
+            var (firstId, nextId) = itemsOnPage switch
+            {
+                [] => (0, 0),
+                [var only] => (only.Id, only.Id),
+                [var first, .., var last] => (first.Id, last.Id)
+            };
+
+            return new Catalog(
+                firstId,
+                nextId,
+                itemsOnPage.Count < pageSize,
+                itemsOnPage.Take(pageSize));
+        };
     }
 }
