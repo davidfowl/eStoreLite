@@ -71,4 +71,3 @@ public class CatalogController(CatalogDbContext catalogContext, IHostEnvironment
         return File(bytes, "image/jpeg");
     }
 }
-
