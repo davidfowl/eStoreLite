@@ -1,3 +1,5 @@
+using System.Runtime;
+using System.Runtime.InteropServices;
 using CatalogService.CompiledModels;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,5 +33,8 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 
 await app.Services.InitializeDatabaseAsync();
+
+app.Logger.LogInformation("Runtime version: {runtimeVersion}", RuntimeInformation.FrameworkDescription);
+app.Logger.LogInformation("Garbage collection mode: {gcMode}", GCSettings.IsServerGC ? "Server" : "Workstation");
 
 app.Run();

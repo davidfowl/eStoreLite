@@ -4,11 +4,16 @@ namespace CatalogService;
 
 public static class CatalogApi
 {
+#if NET6_0
+    public static IEndpointRouteBuilder MapCatalogApi(this IEndpointRouteBuilder routes)
+    {
+        var api = routes;
+#else
     public static RouteGroupBuilder MapCatalogApi(this IEndpointRouteBuilder routes)
     {
-        var group = routes.MapGroup("/api/v1/catalog");
-
-        group.WithTags("Catalog");
+        var api = routes.MapGroup("/api/v1/catalog");
+        api.WithTags("Catalog");
+#endif
 
         // Offset paging
         //group.MapGet("items/type/all/brand/{catalogBrandId?}", async (int? catalogBrandId, CatalogDbContext catalogContext, int pageIndex = 0, int pageSize = 8) =>
@@ -35,7 +40,7 @@ public static class CatalogApi
         //});
 
         // KeySet paging
-        group.MapGet("items/type/all/brand/{catalogBrandId?}", async (int? catalogBrandId, CatalogDbContext catalogContext, int? before, int? after, int pageSize = 8) =>
+        api.MapGet("items/type/all/brand/{catalogBrandId?}", async (int? catalogBrandId, CatalogDbContext catalogContext, int? before, int? after, int pageSize = 8) =>
         {
             var itemsOnPage = await catalogContext.GetCatalogItemsKeySetPagingCompiledAsync(catalogBrandId, before, after, pageSize);
 
@@ -53,7 +58,7 @@ public static class CatalogApi
                 itemsOnPage.Take(pageSize));
         });
 
-        group.MapGet("items/{catalogItemId:int}/image", async (int catalogItemId, CatalogDbContext catalogDbContext, IHostEnvironment environment) =>
+        api.MapGet("items/{catalogItemId:int}/image", async (int catalogItemId, CatalogDbContext catalogDbContext, IHostEnvironment environment) =>
         {
             var item = await catalogDbContext.CatalogItems.FindAsync(catalogItemId);
 
@@ -74,6 +79,6 @@ public static class CatalogApi
         .Produces(404)
         .Produces(200, contentType: "image/jpeg");
 
-        return group;
+        return api;
     }
 }
