@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace CatalogService.Controllers;
@@ -8,8 +7,12 @@ namespace CatalogService.Controllers;
 [Route("api/v1/[controller]")]
 public class CatalogController(CatalogDbContext catalogContext, IHostEnvironment environment) : Controller
 {
-    [HttpGet]
-    [Route("items/type/all/brand/{catalogBrandId?}")]
+    [HttpGet("items/type/all/brand")]
+    [ProducesResponseType(typeof(Catalog), StatusCodes.Status200OK)]
+    public Task<ActionResult<Catalog>> ItemsAsync([FromQuery] int pageSize = 8, [FromQuery] int pageIndex = 0)
+        => ItemsByBrandIdAsync(null, pageSize, pageIndex);
+
+    [HttpGet("items/type/all/brand/{catalogBrandId?}")]
     [ProducesResponseType(typeof(Catalog), StatusCodes.Status200OK)]
     public async Task<ActionResult<Catalog>> ItemsByBrandIdAsync(int? catalogBrandId, [FromQuery] int pageSize = 8, [FromQuery] int pageIndex = 0)
     {
