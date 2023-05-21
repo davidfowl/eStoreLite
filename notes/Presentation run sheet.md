@@ -27,7 +27,7 @@
 5 mins
 
 - Optimize HttpClient that calls the API
-- Change to not buffer whole JSON response, use `GetAsJsonAsync<T>` helpers instead
+- Change to not buffer whole JSON response, use `GetFromJsonAsync<T>` helpers instead
   - Use memory/allocation profiles to see memory use before & after changes
 - Add image forwarder using MapForwarder from YARP
 
