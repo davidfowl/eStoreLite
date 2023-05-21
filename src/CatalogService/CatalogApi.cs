@@ -54,6 +54,7 @@ public static class CatalogApi
             return new CatalogKeySet(
                 firstId,
                 nextId,
+                pageSize,
                 itemsOnPage.Count < pageSize,
                 itemsOnPage.Take(pageSize));
         });

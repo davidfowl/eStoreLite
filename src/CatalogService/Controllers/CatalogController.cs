@@ -10,6 +10,10 @@ namespace CatalogService.Controllers;
 public class CatalogController(CatalogDbContext catalogContext, IHostEnvironment environment) : Controller
 {
     [HttpGet("items/type/all/brand")]
+    [ProducesResponseType(typeof(Catalog), StatusCodes.Status200OK)]
+    public Task<ActionResult<CatalogKeySet>> ItemsAsync([FromQuery] int? before, [FromQuery] int? after, [FromQuery] int pageSize = 8)
+        => ItemsByBrandIdAsync(null, before, after, pageSize);
+
     [HttpGet("items/type/all/brand/{catalogBrandId?}")]
     [ProducesResponseType(typeof(Catalog), StatusCodes.Status200OK)]
     //public async Task<ActionResult<Catalog>> ItemsByBrandIdAsync(int? catalogBrandId, [FromQuery] int pageSize = 8, [FromQuery] int pageIndex = 0)
@@ -44,7 +48,7 @@ public class CatalogController(CatalogDbContext catalogContext, IHostEnvironment
             [var first, .., var last] => (first.Id, last.Id)
         };
 
-        return new CatalogKeySet(firstId, nextId, itemsOnPage.Count < pageSize, itemsOnPage.Take(pageSize));
+        return new CatalogKeySet(firstId, nextId, pageSize, itemsOnPage.Count < pageSize, itemsOnPage.Take(pageSize));
     }
 
     [HttpGet("items/{catalogItemId:int}/image")]

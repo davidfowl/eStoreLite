@@ -46,7 +46,7 @@
             </div>
 
             <div class="pager">
-                <a class="previous button" disable=@(paginationInfo.HasPreviousPage is false)
+                @* <a class="previous button" disable=@(paginationInfo.HasPreviousPage is false)
                    href="?page=@(paginationInfo.Page-1)">
                     <i class="fa fa-arrow-left" aria-hidden="true"></i>
                     Previous
@@ -54,6 +54,18 @@
 
                 <a class="next button" disable=@(paginationInfo.HasNextPage is false)
                    href="?page=@(paginationInfo.Page+1)">
+                    Next
+                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                </a> *@
+
+                <a class="previous button" disable=@(paginationInfo.HasPreviousPage is false)
+                   href="?before=@paginationInfo.FirstId">
+                    <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                    Previous
+                </a>
+
+                <a class="next button" disable=@(paginationInfo.HasNextPage is false)
+                   href="?after=@paginationInfo.NextId">
                     Next
                     <i class="fa fa-arrow-right" aria-hidden="true"></i>
                 </a>
@@ -71,15 +83,27 @@
 
 @code {
     int itemsInCart = 0;
+
+    // Catalog? catalog;
+    // PaginationInfo paginationInfo = new(Page: 0, HasPreviousPage: false, HasNextPage: false);
+
+    // [Parameter]
+    // public int? Page { get; set; }
+
     Catalog? catalog;
-    PaginationInfo paginationInfo = new(Page: 0, HasPreviousPage: false, HasNextPage: false);
+    PaginationInfo paginationInfo = new(FirstId: 0, NextId: 0, HasPreviousPage: false, HasNextPage: false);
 
     [Parameter]
-    public int? Page { get; set; }
+    public int? Before { get; set; }
+
+    [Parameter]
+    public int? After { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        catalog = await CatalogService.GetItemsAsync(Page ?? 0);
+        //catalog = await CatalogService.GetItemsAsync(Page ?? 0);
+
+        catalog = await CatalogService.GetItemsAsync(Before, After);
 
         if (catalog is null)
         {
@@ -87,9 +111,13 @@
         }
 
         // Calculate the total number of pages
-        var totalPages = (int)Math.Ceiling(catalog.Count / (decimal)catalog.PageSize);
-        paginationInfo = new PaginationInfo(catalog.PageIndex, catalog.PageIndex > 0, catalog.PageIndex + 1 < totalPages);
+        //var totalPages = (int)Math.Ceiling(catalog.Count / (decimal)catalog.PageSize);
+        //paginationInfo = new PaginationInfo(catalog.PageIndex, catalog.PageIndex > 0, catalog.PageIndex + 1 < totalPages);
+
+        paginationInfo = new PaginationInfo(catalog.FirstId, catalog.NextId, catalog.FirstId > 1, !catalog.IsLastPage);
     }
 
-    record PaginationInfo(int Page, bool HasPreviousPage, bool HasNextPage);
+    //record PaginationInfo(int Page, bool HasPreviousPage, bool HasNextPage);
+
+    record PaginationInfo(int FirstId, int NextId, bool HasPreviousPage, bool HasNextPage);
 }

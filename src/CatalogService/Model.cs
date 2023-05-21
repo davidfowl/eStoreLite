@@ -5,7 +5,7 @@ namespace CatalogService;
 
 public record Catalog(int PageIndex, int PageSize, long Count, List<CatalogItem> Data);
 
-public record CatalogKeySet(int FirstId, int NextId, bool IsLastPage, IEnumerable<CatalogItem> Data);
+public record CatalogKeySet(int FirstId, int NextId, int PageSize, bool IsLastPage, IEnumerable<CatalogItem> Data);
 
 public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbContext(options)
 {

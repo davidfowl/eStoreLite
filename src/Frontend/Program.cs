@@ -17,7 +17,9 @@ var app = builder.Build();
 
 app.UseStaticFiles();
 
-app.MapGet("/", (int page = 0) => new RazorComponentResult<App>(new { page }));
+//app.MapGet("/", (int page = 0) => new RazorComponentResult<App>(new { page }));
+
+app.MapGet("/", (int? before, int? after) => new RazorComponentResult<App>(new { before, after }));
 
 app.MapGet("/catalog/images/{id}", async (int id, CatalogService catalogService) =>
 {
