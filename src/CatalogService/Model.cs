@@ -10,10 +10,10 @@ public record CatalogKeySet(int FirstId, int NextId, bool IsLastPage, IEnumerabl
 public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbContext(options)
 {
     private static readonly Func<CatalogDbContext, int?, Task<long>> GetCatalogItemsCountQuery =
-    EF.CompileAsyncQuery((CatalogDbContext context, int? catalogBrandId) =>
-        context.CatalogItems
-            .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
-            .LongCount());
+        EF.CompileAsyncQuery((CatalogDbContext context, int? catalogBrandId) =>
+            context.CatalogItems
+                .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
+                .LongCount());
 
     private static readonly Func<CatalogDbContext, int?, int, int, IAsyncEnumerable<CatalogItem>> GetCatalogItemsQuery =
         EF.CompileAsyncQuery((CatalogDbContext context, int? catalogBrandId, int pageIndex, int pageSize) =>
@@ -24,13 +24,13 @@ public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbCo
                   .Take(pageSize));
 
     private static readonly Func<CatalogDbContext, int?, int?, int?, int, IAsyncEnumerable<CatalogItem>> GetCatalogItemsKeySetPagingQuery =
-    EF.CompileAsyncQuery((CatalogDbContext context, int? catalogBrandId, int? before, int? after, int pageSize) =>
-       context.CatalogItems.AsNoTracking()
-              .OrderBy(ci => ci.Id)
-              .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
-              .Where(ci => before == null || ci.Id <= before)
-              .Where(ci => after == null || ci.Id >= after)
-              .Take(pageSize + 1));
+        EF.CompileAsyncQuery((CatalogDbContext context, int? catalogBrandId, int? before, int? after, int pageSize) =>
+           context.CatalogItems.AsNoTracking()
+                  .OrderBy(ci => ci.Id)
+                  .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
+                  .Where(ci => before == null || ci.Id <= before)
+                  .Where(ci => after == null || ci.Id >= after)
+                  .Take(pageSize + 1));
 
     public Task<long> GetCatalogItemsCountAsync(int? catalogBrandId)
     {
