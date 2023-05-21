@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿#if NET6_0_OR_GREATER
+using Microsoft.EntityFrameworkCore;
 
 namespace CatalogService;
 
@@ -83,3 +84,4 @@ public static class CatalogApi
         return api;
     }
 }
+#endif

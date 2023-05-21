@@ -26,9 +26,21 @@
     <EfVersion>6.0.16</EfVersion>
     <NpgsqlVersion>6.0.8</NpgsqlVersion>
   </PropertyGroup>
-  
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
+    <AspNetCoreVersion>5.0.17</AspNetCoreVersion>
+    <EfVersion>5.0.17</EfVersion>
+    <NpgsqlVersion>5.0.10</NpgsqlVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
+    <AspNetCoreVersion>3.1.32</AspNetCoreVersion>
+    <EfVersion>3.1.32</EfVersion>
+    <NpgsqlVersion>3.1.18</NpgsqlVersion>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Condition=" '$(TargetFramework)' != 'net6.0' " Include="Microsoft.AspNetCore.OpenApi" Version="$(AspNetCoreVersion)" />
+    <PackageReference Condition=" '$(TargetFramework)' == 'net7.0' or '$(TargetFramework)' == 'net8.0'" Include="Microsoft.AspNetCore.OpenApi" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="$(EfVersion)">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -37,7 +49,7 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(NpgsqlVersion)" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <Using Include="CatalogService" />
   </ItemGroup>
