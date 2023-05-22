@@ -59,10 +59,6 @@
 - Using compiled models
 - Using raw SQL
 
-## 00:26 ** Shift to startup time optimization **
-
-- Switch to `aot` branch
-
 ## 00:26 4th optimization: Move to minimal APIs
 
 6 mins
@@ -71,6 +67,10 @@
 - See lots time and allocations in MVC
 - Rewrite APIs to use minimal APIs
 - Discuss different architecture, reduction of layers and processing
+
+## 00:32 ** Shift to startup time optimization **
+
+- Switch to `aot` branch
 
 ## 00:32 5th optimization: Removing EF Core
 
