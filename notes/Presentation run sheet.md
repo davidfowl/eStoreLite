@@ -1,6 +1,24 @@
 # Deep dive into .NET performance and native AOT
 
-## 00:00 Introduction: Start with eShopLite on ASP.NET Core 8.0
+## 00:00 Introduction
+
+1 min
+
+- Speakers introduce themselves & topic
+
+## 00:01 Upgrading .NET versions
+
+2 mins (slides only)
+
+- 3.1, 5.0, 6.0, 7.0, 8.0
+- Performance is a forever goal, i.e. every release we work on performance
+- Talk about TechEmpower, show numbers increasing from version to version
+- Point to stoub's performances posts:
+  - https://devblogs.microsoft.com/dotnet/performance_improvements_in_net_7/
+  - https://devblogs.microsoft.com/dotnet/performance-improvements-in-net-6/
+  - https://devblogs.microsoft.com/dotnet/performance-improvements-in-net-5/
+
+## 00:03 Introduce eShopLite on ASP.NET Core 8.0
 
 3 mins
 
@@ -10,19 +28,7 @@
   - Images endpoint, image files stored on disk
 - Frontend Blazor app that calls backend API app to display list of items
 
-## 00:03 1st optimization: Upgrade .NET versions
-
-3 mins (slides only)
-
-- 6.0, 7.0, 8.0
-- Performance is a forever goal, i.e. every release we work on performance
-- Talk about TechEmpower, show numbers increasing from version to version
-- Point to stoub's performances posts:
-  - https://devblogs.microsoft.com/dotnet/performance_improvements_in_net_7/
-  - https://devblogs.microsoft.com/dotnet/performance-improvements-in-net-6/
-  - https://devblogs.microsoft.com/dotnet/performance-improvements-in-net-5/
-
-## 00:06 2nd optimization: Blazor SSR app that uses the API
+## 00:06 1st optimization: Blazor SSR app that uses the API
 
 5 mins
 
@@ -31,7 +37,7 @@
   - Use memory/allocation profiles to see memory use before & after changes
 - Add image forwarder using MapForwarder from YARP
 
-## 00:11 3rd optimization: Images endpoint
+## 00:11 2nd optimization: Images endpoint
 
 5 mins
 
@@ -39,7 +45,7 @@
 - Reduce allocations, show memory profile LOH, etc.
 - Add caching headers support by using in-box result types
 
-## 00:16 4th optimization: EF Core
+## 00:16 3rd optimization: EF Core
 
 10 mins
 
@@ -57,15 +63,7 @@
 
 - Switch to `aot` branch
 
-## 00:26 5th optimization: Removing EF Core
-
-3 mins
-
-- Show that's there still time and allocations occurring due to EF Core (use VS tools again)
-- Removing EF Core saves allocations and processing
-- Could use Dapper (very popular) but we'll use Nanorm with a manual mapping method (as it's native AOT friendly)
-
-## 00:29 6th optimization: Move to minimal APIs
+## 00:26 4th optimization: Move to minimal APIs
 
 6 mins
 
@@ -74,7 +72,15 @@
 - Rewrite APIs to use minimal APIs
 - Discuss different architecture, reduction of layers and processing
 
-## 00:35 7th optimization: Startup time
+## 00:32 5th optimization: Removing EF Core
+
+3 mins
+
+- Show that's there still time and allocations occurring due to EF Core (use VS tools again)
+- Removing EF Core saves allocations and processing
+- Could use Dapper (very popular) but we'll use Nanorm with a manual mapping method (as it's native AOT friendly)
+
+## 00:35 6th optimization: native AOT
 
 5 mins
 
