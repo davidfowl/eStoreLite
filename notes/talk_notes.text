@@ -1,0 +1,79 @@
+5 minutes:
+- Show the app running first
+- Show the code
+
+5 minutes:
+Frontend optimization:
+- Ask the audience what the first thing to do is (measure!)
+- 2 kinds of profiles, allocation and CPU profile
+- Talk about the load tool bombardier OSS tool
+- Run a CPU profile
+ - Home page
+- Use pre-canned CPU profile
+ - Show CatalogService.GetItemsAsync
+ - Show Program.Main.AnonymousMethod__0_2()
+- Use allocation profile
+ - Show Byte[], and String
+
+Backend: 
+ - Image backend
+ - Show dotnet trace collection command line
+
+ - Show the CPU profile
+ - CatalogService.Controllers.CatalogController.ItemsByBrandIdAsync()
+
+Frontend code:
+
+app.MapForwarder("/catalog/images/{id}", catalogServiceUrl, "/api/v1/catalog/items/{id}/image");
+
+Demo:
+
+ParameterExtractingExpressionVisitor
+CompiledQueryCache
+Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable<T>.MoveNext()
+
+Backend code:
+
+Compiled query
+
+private static readonly Func<CatalogDbContext, int?, int?, int?, int, IAsyncEnumerable<CatalogItem>> GetCatalogItemsQuery =
+ EF.CompileAsyncQuery((CatalogDbContext context, int? catalogBrandId, int? before, int? after, int pageSize) =>
+    context.CatalogItems.AsNoTracking()
+           .OrderBy(ci => ci.Id)
+           .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
+           .Where(ci => before == null || ci.Id <= before)
+           .Where(ci => after == null || ci.Id >= after)
+           .Take(pageSize + 1));
+
+
+Key set pagination
+
+public Task<List<CatalogItem>> GetCatalogItemsAsync(int? catalogBrandId, int? before, int? after, int pageSize)
+{
+    // https://learn.microsoft.com/ef/core/performance/efficient-querying#tracking-no-tracking-and-identity-resolution
+
+    return CatalogItems.AsNoTracking()
+                       .OrderBy(ci => ci.Id)
+                       .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
+                       // https://learn.microsoft.com/ef/core/querying/pagination#keyset-pagination
+                       .Where(ci => before == null || ci.Id <= before)
+                       .Where(ci => after == null || ci.Id >= after)
+                       .Take(pageSize + 1)
+                       .ToListAsync();
+}
+
+public Task<List<CatalogItem>> GetCatalogItemsCompiledAsync(int? catalogBrandId, int? before, int? after, int pageSize)
+{
+    return ToListAsync(GetCatalogItemsQuery(this, catalogBrandId, before, after, pageSize));
+}
+
+private static async Task<List<T>> ToListAsync<T>(IAsyncEnumerable<T> asyncEnumerable)
+{
+    var results = new List<T>();
+    await foreach (var value in asyncEnumerable)
+    {
+        results.Add(value);
+    }
+
+    return results;
+}
