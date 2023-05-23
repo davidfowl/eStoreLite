@@ -16,6 +16,8 @@ Frontend optimization:
  - Show Byte[], and String
 
 Backend: 
+ - Set startup project to backend only
+ - Change profiler to target the backend
  - Image backend
  - Show dotnet trace collection command line
 
