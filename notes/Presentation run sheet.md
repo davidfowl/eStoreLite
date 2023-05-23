@@ -1,8 +1,26 @@
 # Deep dive into .NET performance and native AOT
 
-## 00:00 Introduction: Start with eShopLite on ASP.NET Core 8.0
+## 45:00 Introduction
 
-3 mins
+1 min (Title slide)
+
+- Speakers introduce themselves & topic
+
+## 44:00 Upgrading .NET versions
+
+2 mins (2 slides)
+
+- Performance is a forever goal, i.e. every release we work on performance
+- Improvements from 3.1, 5.0, 6.0, 7.0, 8.0 (using project template)
+- Point to stoub's performances posts:
+  - https://devblogs.microsoft.com/dotnet/performance_improvements_in_net_7/
+  - https://devblogs.microsoft.com/dotnet/performance-improvements-in-net-6/
+  - https://devblogs.microsoft.com/dotnet/performance-improvements-in-net-5/
+- Talk about TechEmpower, show numbers increasing from version to version
+
+## 42:00 Introduce eShopLite on ASP.NET Core 8.0
+
+3 mins (1 slide)
 
 - Show the app, extracted from eShop
 - Backend API app with
@@ -10,28 +28,16 @@
   - Images endpoint, image files stored on disk
 - Frontend Blazor app that calls backend API app to display list of items
 
-## 00:03 1st optimization: Upgrade .NET versions
+## 39:00 1st optimization: Blazor SSR app that uses the API
 
-3 mins (slides only)
-
-- 6.0, 7.0, 8.0
-- Performance is a forever goal, i.e. every release we work on performance
-- Talk about TechEmpower, show numbers increasing from version to version
-- Point to stoub's performances posts:
-  - https://devblogs.microsoft.com/dotnet/performance_improvements_in_net_7/
-  - https://devblogs.microsoft.com/dotnet/performance-improvements-in-net-6/
-  - https://devblogs.microsoft.com/dotnet/performance-improvements-in-net-5/
-
-## 00:06 2nd optimization: Blazor SSR app that uses the API
-
-5 mins
+5 mins (Demo title slide)
 
 - Optimize HttpClient that calls the API
-- Change to not buffer whole JSON response, use ReadAsJsonAsync<T> helpers instead
+- Change to not buffer whole JSON response, use `GetFromJsonAsync<T>` helpers instead
   - Use memory/allocation profiles to see memory use before & after changes
 - Add image forwarder using MapForwarder from YARP
 
-## 00:11 4th optimization: Images endpoint
+## 34:00 2nd optimization: Images endpoint
 
 5 mins
 
@@ -39,7 +45,9 @@
 - Reduce allocations, show memory profile LOH, etc.
 - Add caching headers support by using in-box result types
 
-## 00:16 5th optimization: EF Core
+## 29:00 ** Shift to backend API optimization **
+
+## 29:00 3rd optimization: EF Core
 
 10 mins
 
@@ -53,17 +61,7 @@
 - Using compiled models
 - Using raw SQL
 
-## 00:26 ** Shift to startup time optimization **
-
-## 00:26 6th optimization: Removing EF Core
-
-3 mins
-
-- Show that's there still time and allocations occurring due to EF Core (use VS tools again)
-- Removing EF Core saves allocations and processing
-- Could use Dapper (very popular) but we'll use Nanorm with a manual mapping method (as it's native AOT friendly)
-
-## 00:29 7th optimization: Move to minimal APIs
+## 19:00 4th optimization: Move to minimal APIs
 
 6 mins
 
@@ -72,7 +70,19 @@
 - Rewrite APIs to use minimal APIs
 - Discuss different architecture, reduction of layers and processing
 
-## 00:35 7th optimization: Startup time
+## 13:00 ** Shift to startup time optimization **
+
+- Switch to `aot` branch
+
+## 13:00 5th optimization: Removing EF Core
+
+3 mins
+
+- Show that's there still time and allocations occurring due to EF Core (use VS tools again)
+- Removing EF Core saves allocations and processing
+- Could use Dapper (very popular) but we'll use Nanorm with a manual mapping method (as it's native AOT friendly)
+
+## 10:00 6th optimization: native AOT
 
 5 mins
 
@@ -81,7 +91,7 @@
 - Talk about native AOT benefits and trade-offs
 - Enable native AOT and show startup time improvement
 
-## 00:40 Close out
+## 05:00 Close out
 
 3 mins
 
@@ -89,7 +99,7 @@
 - Recap performance gains from original version to optimized version
 - Summarize calls to action
 
-## 00:43 Q & A if time (2 minutes buffer)
+## 02:00 Q & A on Pubble if time (2 minutes buffer)
 
 ## BONUS 1 Compare to gRPC
 
