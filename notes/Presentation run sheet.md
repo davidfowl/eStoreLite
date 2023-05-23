@@ -20,7 +20,7 @@
 
 ## 42:00 Introduce eShopLite on ASP.NET Core 8.0
 
-3 mins (1 slide)
+5 mins (1 slide)
 
 - Show the app, extracted from eShop
 - Backend API app with
@@ -28,7 +28,7 @@
   - Images endpoint, image files stored on disk
 - Frontend Blazor app that calls backend API app to display list of items
 
-## 39:00 1st optimization: Blazor SSR app that uses the API
+## 37:00 1st optimization: Blazor SSR app that uses the API
 
 5 mins (Demo title slide)
 
@@ -37,7 +37,7 @@
   - Use memory/allocation profiles to see memory use before & after changes
 - Add image forwarder using MapForwarder from YARP
 
-## 34:00 2nd optimization: Images endpoint
+## 32:00 2nd optimization: Images endpoint
 
 5 mins
 
@@ -45,9 +45,9 @@
 - Reduce allocations, show memory profile LOH, etc.
 - Add caching headers support by using in-box result types
 
-## 29:00 ** Shift to backend API optimization **
+## 27:00 ** Shift to backend API optimization **
 
-## 29:00 3rd optimization: EF Core
+## 27:00 3rd optimization: EF Core
 
 10 mins
 
@@ -61,7 +61,7 @@
 - Using compiled models
 - Using raw SQL
 
-## 19:00 4th optimization: Move to minimal APIs
+## 17:00 4th optimization: Move to minimal APIs
 
 6 mins
 
@@ -70,11 +70,11 @@
 - Rewrite APIs to use minimal APIs
 - Discuss different architecture, reduction of layers and processing
 
-## 13:00 ** Shift to startup time optimization **
+## 11:00 ** Shift to startup time optimization **
 
 - Switch to `aot` branch
 
-## 13:00 5th optimization: Removing EF Core
+## 11:00 5th optimization: Removing EF Core
 
 3 mins
 
@@ -82,7 +82,7 @@
 - Removing EF Core saves allocations and processing
 - Could use Dapper (very popular) but we'll use Nanorm with a manual mapping method (as it's native AOT friendly)
 
-## 10:00 6th optimization: native AOT
+## 08:00 6th optimization: native AOT
 
 5 mins
 
@@ -91,7 +91,7 @@
 - Talk about native AOT benefits and trade-offs
 - Enable native AOT and show startup time improvement
 
-## 05:00 Close out
+## 03:00 Close out
 
 3 mins
 
@@ -99,7 +99,7 @@
 - Recap performance gains from original version to optimized version
 - Summarize calls to action
 
-## 02:00 Q & A on Pubble if time (2 minutes buffer)
+## 00:00 Q & A on Pubble if time (0 minutes buffer)
 
 ## BONUS 1 Compare to gRPC
 
