@@ -3,13 +3,14 @@
 - Ask the audience what the first thing to do is (measure!)
 - 2 kinds of profiles, allocation and CPU profile
 - Talk about the load tool bombardier OSS tool
-- Run a CPU profile
+- Use pre-canned CPU profile
  - Home page
 - Use pre-canned CPU profile
  - Show CatalogService.GetItemsAsync
- - Show Program.Main.AnonymousMethod__0_2()
 - Use allocation profile
  - Show Byte[], and String
+ - Show Blazor (https://github.com/dotnet/aspnetcore/pull/48406)
+- Fix the code in both places
 
 Backend: 
  - Set startup project to backend only
