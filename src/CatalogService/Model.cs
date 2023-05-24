@@ -7,6 +7,48 @@ public record Catalog(int PageIndex, int PageSize, long Count, List<CatalogItem>
 
 public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbContext(options)
 {
+    #region Keyset Paging
+
+    public Task<List<CatalogItem>> GetCatalogItemsAsync(int? catalogBrandId, int? before, int? after, int pageSize)
+    {
+        // https://learn.microsoft.com/ef/core/performance/efficient-querying#tracking-no-tracking-and-identity-resolution
+
+        return CatalogItems.AsNoTracking()
+                           .OrderBy(ci => ci.Id)
+                           .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
+                           // https://learn.microsoft.com/ef/core/querying/pagination#keyset-pagination
+                           .Where(ci => before == null || ci.Id <= before)
+                           .Where(ci => after == null || ci.Id >= after)
+                           .Take(pageSize + 1)
+                           .ToListAsync();
+    }
+
+    #endregion
+
+    #region Compiled Query
+
+    private static readonly Func<CatalogDbContext, int?, int?, int?, int, IAsyncEnumerable<CatalogItem>> GetCatalogItemsQuery =
+         EF.CompileAsyncQuery((CatalogDbContext context, int? catalogBrandId, int? before, int? after, int pageSize) =>
+            context.CatalogItems.AsNoTracking()
+                   .OrderBy(ci => ci.Id)
+                   .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
+                   .Where(ci => before == null || ci.Id <= before)
+                   .Where(ci => after == null || ci.Id >= after)
+                   .Take(pageSize + 1));
+
+    public async Task<List<CatalogItem>> GetCatalogItemsCompiledAsync(int? catalogBrandId, int? before, int? after, int pageSize)
+    {
+        var results = new List<CatalogItem>();
+        await foreach (var value in GetCatalogItemsQuery(this, catalogBrandId, before, after, pageSize))
+        {
+            results.Add(value);
+        }
+
+        return results;
+    }
+
+    #endregion
+
     public DbSet<CatalogItem> CatalogItems => Set<CatalogItem>();
     public DbSet<CatalogBrand> CatalogBrands => Set<CatalogBrand>();
     public DbSet<CatalogType> CatalogTypes => Set<CatalogType>();
