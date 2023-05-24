@@ -5,6 +5,10 @@ namespace CatalogService;
 
 public record Catalog(int PageIndex, int PageSize, long Count, List<CatalogItem> Data);
 
+#region New Model
+// public record Catalog(int FirstId, int NextId, bool IsLastPage, IEnumerable<CatalogItem> Data);
+#endregion
+
 public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbContext(options)
 {
     #region Keyset Paging
