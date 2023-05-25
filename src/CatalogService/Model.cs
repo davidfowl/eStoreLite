@@ -42,7 +42,7 @@ public sealed class CatalogDb(NpgsqlDataSource dataSource) : ICatalogDb
             (before ?? -1).AsTypedDbParameter(),
             (after ?? -1).AsTypedDbParameter(),
             (pageSize + 1).AsTypedDbParameter())
-            .ToListAsync();
+            .ToListAsync(initialCapacity: pageSize);
     }
 }
 
