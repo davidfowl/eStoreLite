@@ -11,30 +11,25 @@ public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbCo
 
     private static readonly Func<CatalogDbContext, int?, int?, int?, int, IAsyncEnumerable<CatalogItem>> GetCatalogItemsQuery =
         EF.CompileAsyncQuery((CatalogDbContext context, int? catalogBrandId, int? before, int? after, int pageSize) =>
+           // https://learn.microsoft.com/ef/core/performance/efficient-querying#tracking-no-tracking-and-identity-resolution
            context.CatalogItems.AsNoTracking()
                   .OrderBy(ci => ci.Id)
                   .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
+                   // https://learn.microsoft.com/ef/core/querying/pagination#keyset-pagination
                   .Where(ci => before == null || ci.Id <= before)
                   .Where(ci => after == null || ci.Id >= after)
                   .Take(pageSize + 1));
 
-    public Task<List<CatalogItem>> GetCatalogItemsAsync(int? catalogBrandId, int? before, int? after, int pageSize)
+    public async Task<List<CatalogItem>> GetCatalogItemsCompiledAsync(int? catalogBrandId, int? before, int? after, int pageSize)
     {
-        // https://learn.microsoft.com/ef/core/performance/efficient-querying#tracking-no-tracking-and-identity-resolution
+        // Use the page size to avoid resizing
+        var results = new List<CatalogItem>(pageSize);
+        await foreach (var value in GetCatalogItemsQuery(this, catalogBrandId, before, after, pageSize))
+        {
+            results.Add(value);
+        }
 
-        return CatalogItems.AsNoTracking()
-                           .OrderBy(ci => ci.Id)
-                           .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
-                           // https://learn.microsoft.com/ef/core/querying/pagination#keyset-pagination
-                           .Where(ci => before == null || ci.Id <= before)
-                           .Where(ci => after == null || ci.Id >= after)
-                           .Take(pageSize + 1)
-                           .ToListAsync();
-    }
-
-    public Task<List<CatalogItem>> GetCatalogItemsCompiledAsync(int? catalogBrandId, int? before, int? after, int pageSize)
-    {
-        return ToListAsync(GetCatalogItemsQuery(this, catalogBrandId, before, after, pageSize));
+        return results;
     }
 
     public DbSet<CatalogItem> CatalogItems => Set<CatalogItem>();
@@ -106,17 +101,6 @@ public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbCo
         builder.Property(cb => cb.Brand)
             .IsRequired()
             .HasMaxLength(100);
-    }
-
-    private static async Task<List<T>> ToListAsync<T>(IAsyncEnumerable<T> asyncEnumerable)
-    {
-        var results = new List<T>();
-        await foreach (var value in asyncEnumerable)
-        {
-            results.Add(value);
-        }
-
-        return results;
     }
 }
 
