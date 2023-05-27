@@ -25,8 +25,7 @@ namespace CatalogService.CompiledModels
                 fieldInfo: typeof(CatalogBrand).GetField("<Id>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 valueGenerated: ValueGenerated.OnAdd,
                 afterSaveBehavior: PropertySaveBehavior.Throw);
-            id.AddAnnotation("Npgsql:HiLoSequenceName", "catalog_brand_hilo");
-            id.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SequenceHiLo);
+            id.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
             var brand = runtimeEntityType.AddProperty(
                 "Brand",

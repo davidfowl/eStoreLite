@@ -26,8 +26,7 @@ namespace CatalogService.CompiledModels
                 fieldInfo: typeof(CatalogItem).GetField("<Id>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 valueGenerated: ValueGenerated.OnAdd,
                 afterSaveBehavior: PropertySaveBehavior.Throw);
-            id.AddAnnotation("Npgsql:HiLoSequenceName", "catalog_hilo");
-            id.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SequenceHiLo);
+            id.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
             var availableStock = runtimeEntityType.AddProperty(
                 "AvailableStock",

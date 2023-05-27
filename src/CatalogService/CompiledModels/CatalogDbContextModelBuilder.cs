@@ -28,32 +28,6 @@ namespace CatalogService.CompiledModels
             CatalogItemEntityType.CreateAnnotations(catalogItem);
             CatalogTypeEntityType.CreateAnnotations(catalogType);
 
-            var sequences = new SortedDictionary<(string, string?), ISequence>();
-            var catalog_brand_hilo = new RuntimeSequence(
-                "catalog_brand_hilo",
-                this,
-                typeof(long),
-                incrementBy: 10);
-
-            sequences[("catalog_brand_hilo", null)] = catalog_brand_hilo;
-
-            var catalog_hilo = new RuntimeSequence(
-                "catalog_hilo",
-                this,
-                typeof(long),
-                incrementBy: 10);
-
-            sequences[("catalog_hilo", null)] = catalog_hilo;
-
-            var catalog_type_hilo = new RuntimeSequence(
-                "catalog_type_hilo",
-                this,
-                typeof(long),
-                incrementBy: 10);
-
-            sequences[("catalog_type_hilo", null)] = catalog_type_hilo;
-
-            AddAnnotation("Relational:Sequences", sequences);
             AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
             AddAnnotation("ProductVersion", "8.0.0-preview.4.23259.3");
             AddAnnotation("Relational:MaxIdentifierLength", 63);
@@ -85,6 +59,7 @@ namespace CatalogService.CompiledModels
             var catalogBrandTable = new Table("CatalogBrand", null, relationalModel);
             var idColumn = new Column("Id", "integer", catalogBrandTable);
             catalogBrandTable.Columns.Add("Id", idColumn);
+            idColumn.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
             var brandColumn = new Column("Brand", "character varying(100)", catalogBrandTable);
             catalogBrandTable.Columns.Add("Brand", brandColumn);
             var pK_CatalogBrand = new UniqueConstraint("PK_CatalogBrand", catalogBrandTable, new[] { idColumn });
@@ -156,6 +131,7 @@ namespace CatalogService.CompiledModels
             var catalogTable = new Table("Catalog", null, relationalModel);
             var idColumn0 = new Column("Id", "integer", catalogTable);
             catalogTable.Columns.Add("Id", idColumn0);
+            idColumn0.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
             var availableStockColumn = new Column("AvailableStock", "integer", catalogTable);
             catalogTable.Columns.Add("AvailableStock", availableStockColumn);
             var catalogBrandIdColumn = new Column("CatalogBrandId", "integer", catalogTable);
@@ -243,6 +219,7 @@ namespace CatalogService.CompiledModels
             var catalogTypeTable = new Table("CatalogType", null, relationalModel);
             var idColumn1 = new Column("Id", "integer", catalogTypeTable);
             catalogTypeTable.Columns.Add("Id", idColumn1);
+            idColumn1.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
             var typeColumn = new Column("Type", "character varying(100)", catalogTypeTable);
             catalogTypeTable.Columns.Add("Type", typeColumn);
             var pK_CatalogType = new UniqueConstraint("PK_CatalogType", catalogTypeTable, new[] { idColumn1 });
