@@ -28,7 +28,7 @@ public static class CatalogApi
                 firstId,
                 nextId,
                 itemsOnPage.Count < pageSize,
-                itemsOnPage.Select(item => item.ToDTO()).Take(pageSize));
+                itemsOnPage.Take(pageSize));
         };
 
         group.MapGet("items/{catalogItemId:int}/image", async (int catalogItemId, CatalogDbContext catalogDbContext, IHostEnvironment environment) =>

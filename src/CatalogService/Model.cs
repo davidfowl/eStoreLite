@@ -5,14 +5,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace CatalogService;
 
 // DTOs
-public record Catalog(int FirstId, int NextId, bool IsLastPage, IEnumerable<CatalogItemDTO> Data);
+public record Catalog(int FirstId, int NextId, bool IsLastPage, IEnumerable<ICatalogItem> Data);
 
-public record CatalogItemDTO(int Id, string Name, string? Description, decimal Price);
-
-internal static class MappingExtensions
+public interface ICatalogItem
 {
-    public static CatalogItemDTO ToDTO(this CatalogItem item) =>
-        new(Id: item.Id, Name: item.Name, Description: item.Description, Price: item.Price);
+    public int Id { get; }
+    public string Name { get; }
+    public string? Description { get; }
+    public decimal Price { get; }
 }
 
 // Database Models
@@ -27,7 +27,7 @@ public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbCo
            context.CatalogItems.AsNoTracking()
                   .OrderBy(ci => ci.Id)
                   .Where(ci => catalogBrandId == null || ci.CatalogBrandId == catalogBrandId)
-                   // https://learn.microsoft.com/ef/core/querying/pagination#keyset-pagination
+                  // https://learn.microsoft.com/ef/core/querying/pagination#keyset-pagination
                   .Where(ci => before == null || ci.Id <= before)
                   .Where(ci => after == null || ci.Id >= after)
                   .Take(pageSize + 1));
@@ -68,7 +68,7 @@ public class CatalogBrand
 }
 
 [Table("Catalog")]
-public class CatalogItem
+public class CatalogItem : ICatalogItem
 {
     public int Id { get; set; }
 
