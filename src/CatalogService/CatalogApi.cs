@@ -28,14 +28,14 @@ public static class CatalogApi
                 firstId,
                 nextId,
                 itemsOnPage.Count < pageSize,
-                itemsOnPage.Take(pageSize));
+                itemsOnPage.Select(item => item.ToDTO()).Take(pageSize));
         };
 
         group.MapGet("items/{catalogItemId:int}/image", async (int catalogItemId, CatalogDbContext catalogDbContext, IHostEnvironment environment) =>
         {
             var item = await catalogDbContext.CatalogItems.FindAsync(catalogItemId);
 
-            if (item is null)
+            if (item is null || item.PictureFileName is null)
             {
                 return Results.NotFound();
             }

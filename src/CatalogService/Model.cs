@@ -4,7 +4,18 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CatalogService;
 
-public record Catalog(int FirstId, int NextId, bool IsLastPage, IEnumerable<CatalogItem> Data);
+// DTOs
+public record Catalog(int FirstId, int NextId, bool IsLastPage, IEnumerable<CatalogItemDTO> Data);
+
+public record CatalogItemDTO(int Id, string Name, string? Description, decimal Price);
+
+internal static class MappingExtensions
+{
+    public static CatalogItemDTO ToDTO(this CatalogItem item) =>
+        new(Id: item.Id, Name: item.Name, Description: item.Description, Price: item.Price);
+}
+
+// Database Models
 
 public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbContext(options)
 {
