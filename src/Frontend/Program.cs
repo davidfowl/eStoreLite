@@ -5,11 +5,16 @@ var builder = WebApplication.CreateBuilder(args);
 var catalogServiceUrl = builder.Configuration["CatalogServiceUrl"] ??
     throw new InvalidDataException("Missing configuration for CatalogServiceUrl");
 
+var catalogServiceGrpcUrl = builder.Configuration["CatalogServiceGrpcUrl"] ??
+    throw new InvalidDataException("Missing configuration for CatalogServiceGrpcUrl");
+
 builder.Services.AddHttpForwarder();
 
-builder.Services.AddHttpClient<CatalogService>(c =>
+builder.Services.AddTransient<CatalogService>();
+
+builder.Services.AddGrpcClient<Grpc.CatalogService.CatalogServiceClient>(c =>
 {
-    c.BaseAddress = new(catalogServiceUrl);
+    c.Address = new Uri(catalogServiceGrpcUrl);
 });
 
 builder.Services.AddRazorComponents();

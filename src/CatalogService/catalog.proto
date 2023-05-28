@@ -1,0 +1,29 @@
+﻿syntax = "proto3";
+
+package Grpc;
+
+message CatalogItemDto { 
+	int32 id = 1; 
+	string name = 2; 
+	string description = 3; 
+	double price = 4;  
+}
+
+service CatalogService { 
+	rpc GetCatalogItems (CatalogItemsRequest) returns (CatalogItemsResponse) {}
+}
+
+message CatalogItemsRequest { 
+	int32 catalogBrandId = 1; 
+	int32 before = 3; 
+	int32 after = 4;
+	int32 pageSize = 5;
+}
+
+message CatalogItemsResponse { 
+	repeated CatalogItemDto catalogItems = 1; 
+	int32 firstId = 2; 
+	int32 lastId = 3; 
+	bool hasNextPage = 4; 
+	bool hasPreviousPage = 5; 
+}

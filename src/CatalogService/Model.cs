@@ -4,17 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CatalogService;
 
-// DTOs
-public record Catalog(int FirstId, int NextId, bool IsLastPage, IEnumerable<ICatalogItem> Data);
-
-public interface ICatalogItem
-{
-    public int Id { get; }
-    public string Name { get; }
-    public string? Description { get; }
-    public decimal Price { get; }
-}
-
 // Database Models
 
 public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbContext(options)
@@ -68,7 +57,7 @@ public class CatalogBrand
 }
 
 [Table("Catalog")]
-public class CatalogItem : ICatalogItem
+public class CatalogItem
 {
     public int Id { get; set; }
 

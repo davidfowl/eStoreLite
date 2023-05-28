@@ -1,21 +1,23 @@
-﻿using System.Globalization;
+﻿using Grpc;
 
 namespace Frontend;
 
-public class CatalogService(HttpClient client)
+public class CatalogService(Grpc.CatalogService.CatalogServiceClient client)
 {
-    public Task<Catalog?> GetItemsAsync(int? before = null, int? after = null)
+    public async Task<Catalog?> GetItemsAsync(int? before = null, int? after = null)
     {
-        // Make the query string with encoded parameters
-        var query = (before, after) switch
+        var response = await client.GetCatalogItemsAsync(new CatalogItemsRequest
         {
-            (null, null) => default,
-            (int b, null) => QueryString.Create("before", b.ToString(CultureInfo.InvariantCulture)),
-            (null, int a) => QueryString.Create("after", a.ToString(CultureInfo.InvariantCulture)),
-            _ => throw new InvalidOperationException(),
-        };
+            PageSize = 8,
+            Before = before ?? -1,
+            After = after ?? -1
+        });
 
-        return client.GetFromJsonAsync<Catalog>($"/api/v1/catalog/items/type/all/brand{query}");
+        return new(
+            response.FirstId, 
+            response.LastId, 
+            response.HasNextPage, 
+            response.CatalogItems.Select(item => new CatalogItem(item.Id, item.Name, item.Description, (decimal)item.Price)));
     }
 }
 

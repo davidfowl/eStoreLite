@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddGrpc();
+
 // https://learn.microsoft.com/ef/core/performance/advanced-performance-topics#dbcontext-pooling
 builder.Services.AddDbContextPool<CatalogDbContext>(options =>
 {
