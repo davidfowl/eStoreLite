@@ -31,7 +31,7 @@ public static class CatalogApi
                 itemsOnPage.Take(pageSize));
         };
 
-        group.MapGet("items/{catalogItemId:int}/image", async (int catalogItemId, CatalogDbContext catalogDbContext, IHostEnvironment environment) =>
+        group.MapGet("items/{catalogItemId}/image", async (int catalogItemId, CatalogDbContext catalogDbContext, IHostEnvironment environment) =>
         {
             var item = await catalogDbContext.CatalogItems.FindAsync(catalogItemId);
 
